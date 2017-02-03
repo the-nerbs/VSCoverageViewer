@@ -1,0 +1,77 @@
+﻿<UserControl x:Class="VSCoverageViewer.Views.MainToolStrip"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" mc:Ignorable="d"
+             xmlns:local="clr-namespace:VSCoverageViewer"
+             d:DesignWidth="650" d:DesignHeight="28">
+  <ToolBarTray>
+    <ToolBar Height="28">
+      <ToolBar.Resources>
+        <Style TargetType="Separator">
+          <Setter Property="Margin" Value="6 0" />
+        </Style>
+      </ToolBar.Resources>
+
+      <Button Command="{Binding OpenCmd}" ToolTip="Open">
+        <Image Source="{StaticResource {x:Static local:AppResourceKeys.OpenFileImg}}"
+               Stretch="Uniform"/>
+      </Button>
+
+      <Button Command="{Binding SaveCmd}" ToolTip="Save">
+        <Image Source="{StaticResource {x:Static local:AppResourceKeys.SaveFileImg}}"
+               Stretch="Uniform"/>
+      </Button>
+
+      <Button Command="{Binding ExportCmd}" ToolTip="Export Summary">
+        <Image Source="{StaticResource {x:Static local:AppResourceKeys.ExportSummaryImg}}"
+               Stretch="Uniform"/>
+      </Button>
+
+      <Separator />
+
+      <Button Margin="3 0"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center"
+              Command="{Binding ShowFilterDesignCmd}">
+        <Border BorderThickness="1">
+          <Image Source="{StaticResource FilterImg}"
+                 Stretch="None" />
+        </Border>
+      </Button>
+    </ToolBar>
+    
+    <ToolBar>
+      <TextBlock VerticalAlignment="Center"
+                 Margin="3 0"
+                 Text="Columns:" />
+
+      <ComboBox Width="150"
+                Margin="3 0"
+                ItemsSource="{local:EnumSource {x:Type local:ColumnPreset}}"
+                DisplayMemberPath="Display"
+                SelectedValuePath="Value"
+                SelectedValue="{Binding ColumnVisibilityPreset}" />
+
+      <Button Margin="3 0"
+              Command="{Binding ShowColumnPropertiesCmd}">
+        <!-- Border is so the image isn't stretched. -->
+        <Border BorderThickness="1">
+          <Image Source="{StaticResource {x:Static local:AppResourceKeys.PropertyImg}}"
+                 Stretch="None" />
+        </Border>
+      </Button>
+    </ToolBar>
+
+    <ToolBar>
+      <TextBlock VerticalAlignment="Center"
+                 Margin="3 0"
+                 Text="Desired Coverage:" />
+
+      <TextBox Margin="3 0"
+               BorderBrush="LightGray"
+               MinWidth="50"
+               Text="{Binding CoverageThreshold, Converter={StaticResource PercentageCvt}, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" />
+    </ToolBar>
+  </ToolBarTray>
+</UserControl>

@@ -1,0 +1,56 @@
+﻿<Application x:Class="VSCoverageViewer.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:VSCoverageViewer"
+             xmlns:cvt="clr-namespace:VSCoverageViewer.Converters"
+             StartupUri="MainWindow.xaml">
+  <Application.Resources>
+
+
+    <Style x:Key="IconicBtn" TargetType="Button"
+           BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" />
+
+
+    <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+    <cvt:EnumDescriptionConverter x:Key="DescriptionCvt" />
+    <cvt:NodeTypeToImageConverter x:Key="NodeTypeToImageSource" />
+    <cvt:PercentageConverter x:Key="PercentageCvt" />
+
+
+    <!-- Action Icons -->
+    <BitmapImage x:Key="{x:Static local:AppResourceKeys.OpenFileImg}"
+                 UriSource="Resources/openHS.png" />
+    
+    <BitmapImage x:Key="{x:Static local:AppResourceKeys.SaveFileImg}"
+                 UriSource="Resources/save.png" />
+    
+    <BitmapImage x:Key="{x:Static local:AppResourceKeys.ExportSummaryImg}"
+                 UriSource="Resources/export.png" />
+
+    <BitmapImage x:Key="{x:Static local:AppResourceKeys.FilterImg}"
+                 UriSource="Resources/Filter.png" />
+
+    <!-- Coverage element icons -->
+    <BitmapImage x:Key="{x:Static local:AppResourceKeys.TotalsImg}"
+                 UriSource="Resources/Totals.png" />
+
+    <BitmapImage x:Key="{x:Static local:AppResourceKeys.ModuleImg}"
+                 UriSource="Resources/Module.png" />
+
+    <BitmapImage x:Key="{x:Static local:AppResourceKeys.NamespaceImg}"
+                 UriSource="Resources/Namespace.png" />
+
+    <BitmapImage x:Key="{x:Static local:AppResourceKeys.ClassImg}"
+                 UriSource="Resources/Class.png" />
+
+    <BitmapImage x:Key="{x:Static local:AppResourceKeys.StructImg}"
+                 UriSource="Resources/Struct.png" />
+
+    <BitmapImage x:Key="{x:Static local:AppResourceKeys.PropertyImg}"
+                 UriSource="Resources/Property.png" />
+
+    <BitmapImage x:Key="{x:Static local:AppResourceKeys.FunctionImg}"
+                 UriSource="Resources/Method.png" />
+
+  </Application.Resources>
+</Application>

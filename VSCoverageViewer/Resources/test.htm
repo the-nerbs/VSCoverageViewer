@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.min.js"></script> -->
+        <style>
+          table thead {
+            background-color: #eee;
+            color: #000000;
+            font-weight: bold;
+            cursor: default;
+          }
+          
+          td.module-data {
+            padding-left: 5px;
+          }
+          td.namespace-data {
+            padding-left: 26px;
+          }
+          td.class-data {
+            padding-left: 46px;
+          }
+          td.method-data {
+            padding-left: 56px;
+          }
+          
+          .type {
+            height: 16px;
+            white-space: nowrap;
+            text-align: center;
+            float: left;
+            
+            font-family: "Consolas", Monaco, monospace;
+            font-size: 9pt;
+          }
+          .type.module {
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsEAAA7BAbiRa+0AAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjExR/NCNwAAAWZJREFUOE+lkd0rQ2Ecx8//JCmu3EhISm5ILhhNbFHzumwyDeOYyGqsjcxCyNKaEhcaaduFtwu2ItPxUmcxtcM2vs45e/H2rJxcfHrq2+/z/T1PDwXgXxBDKRBDKRBDKRBDgck5FwzmNfRPONA9bIVSa4Kscxy1Sj0qmzQoq+vix7IU0BYnfwDxRALcSwxPkSge2AhCt2EEru5xen4D7/El8svlv2UB3dQSEvE3cNwrHp/TMotgSvbxcu/oInJLZKBCDMvt+wNYdx++pwt6RmyI8vLn5u/ynu8CKv08corrQXn8Qdg3DkDPusSzj14W35uRGUG+w0nq2oK87TlD24AlWbC65ePGeFltWMjcoKGDFuVrJpzZLMrepLy5c4QWjTlZkJa+Ut06KG42O3ZhtLoxZHJCa1zhf8OOdp0NCu0M5Orp7AUCRTUqFFYpUFDRjLzSRnH4J8IcUZYCMZQCMZQCMfw7oD4AbR3/0LPnzA0AAAAASUVORK5CYII=');
+            width: 16px;
+            margin-top: 1px;
+            margin-right: 5px;
+          }
+          .type.namespace {
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsEAAA7BAbiRa+0AAAIBSURBVDhPrVM9aJpRFH1DiGhERGJwcBUKpZBBgwUDGQoOhYIZRaQiODgUHAMSM7m5tLo4hEwGvqFIQBcL1kFDly7FLgY7KlKhKoI/n96c+3yJhkqhkAOP73vn3Hffffe8JzYxn8+Pl8vlZ4zb6XT6StFC1/V34L4R0ZfZbHak6KeAeFKpVMjlclEoFKLFYvGR+W63u9dqtXoOh4N8Ph+Nx+MeYm1y0Saw4MrtdpPZbKZ8Ps8JLphHsKHf7/8OBALEU03TQNEJa08Asul0OikWixHKvcHcqCSB47zEfGCxWCiVSnGCuJLW4AR2u53S6TTvfqboR0C/Y31rAj4nmvPHYDBQLpf7OwAAJyuMx+Osf1L0Cii5mEwm5RlrtRrBjTcrZQ1UdR2NRslqtVK9Xl/CmVMpDAYDW6PR0PFLHo+Hs/eq1eqOFDcA3g83yGQykd/v5z5pShJiMpn85NLwKytA016slDXY1nA4TEajkcrlMqGCt0oSYjgc7qNs2eVMJsNVhJT0COz4/cElJLtU9BpYJF3gLv+3C4yHBIlEggO0ZrO5qyQBhw5Rweif9wABX71eL/GVLRQKHHTOPL620Wg0jkQiskfZbHarS/xg3pdKJWlTMBjkBDnmsfig3W7r3H1+J51OZ6tLEjj7OcYdxg8kOFQ08x/g1C/sXMR4rejngBD3Cr6SUZK5AcQAAAAASUVORK5CYII=');
+            width: 16px;
+            margin-top: 1px;
+            margin-right: 5px;
+          }
+          .type.class {
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsEAAA7BAbiRa+0AAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjExR/NCNwAAATtJREFUOE+NjzEvBEEYhvcHiEqiOb9ARMF1Oj/g9DqicgmJRqGguKtcKe4ikWglGpxSriSiITknFLZQKNwddptVvOYd+SYzO7OheHZnd+d55tsIgMNVc3wyPh4D7/lvIZwHkdO4xsC/ImYhchLXkXRX8XGzEIwkjdR5duT0pYavbhWfSh50ZvHensDO0oiJUL5buYcdscauG3nYKSu5FJSzkwx2JJJ/Th5+xx6qk/sFJ1POmt94Wn/G7lRDR/QEh5ujSq7osQeX01pe29439KqPQVlPwItE+hcl8C4nU5YJTufOPJnoC5GIyEQChBLlo73XirwjZkFsmdgBQnnxoAeFP0EIO0CJcusWmN+4NhFPspGALW+dv1FGNNPSkaAoMECKZO4Jinm4ubzc9mTibS6CUl4mzqa/yMsAoh9XIMJYuMKVLQAAAABJRU5ErkJggg==');
+            width: 16px;
+            margin-top: 1px;
+            margin-right: 5px;
+          }
+          .type.method {
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsEAAA7BAbiRa+0AAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjExR/NCNwAAAZZJREFUOE+lkbtLQnEcxaVoaOqfCBqicCiIkKCooCATo5bcgyKtwKXMGhoiyHSwbqW45PvVkCJoQehSiZKPpdegVFhmbcF1OHmv3crrL+gxfLjc8z3fc76XKwDwL4giibz/qYGkVwkkLnYux+OrcYTXwl38WcULCW4568qCecZ0se6v8woznyvDtZxZKhwVQHuKeNTl2ZCkPjXIeT7Mry9OpNMuuA48WNv2lCaCGsac8WZAO4ugqTI57QMbcrJy2lYRQMIisSKoCKFgfga9+x6yXcQddQ+tWMeU1LLNudty+3GkdIHPDWrPU9qHwDpsw/l04jPEVETB+IxN6RZUrSomoI7YzGGXOnA+mUBakUZo5hDX1A00/RswiIxQt6o/A5grbjNORGMu+IJuGKzlC8xiy5BNYkdiKomkPAW1cAkmkQnr7RqoWhYha5TVV7XyKX1Gj13iwNlElG3Vd2xivnkBYVmE/Z3EJT7ekf1O5pIl4TKUTUr4Rv193KzK/B2BsUDvbOMcLGLLwFe9wvQXiOJvIIo/B4I3FfjksBM04QcAAAAASUVORK5CYII=');
+            width: 16px;
+            margin-top: 1px;
+            margin-right: 5px;
+          }
+          
+          
+          .header-block {
+            background-color: paleturquoise;
+            font-family: Arial, Helvetica, sans-serif;
+            width: 75%;
+          }
+          
+          
+          table {
+            border-collapse: collapse;
+            min-width: 75%;
+          }
+          table, th, td {
+            border: 1px solid #CCC;
+          }
+          td {
+            background: #f0f0f0;
+            padding-left: 10px;
+            padding-right: 10px;
+          }
+          
+          
+          .hidden {
+            visibility: hidden;
+          }
+          .hover-text {
+            border-bottom: 1px dotted #000;
+          }
+          .header-cell {
+            background: #e0e0e0;
+            text-align: center;
+          }
+          
+          .helper {
+            display: inline-block;
+            height: 100%;
+            vertical-align: middle;
+          }
+          
+          .cpu {
+            text-align: center;
+            font-size: small;
+          }
+          .cpu.graph {
+            width: 140px;
+            display: inline-table;
+            border: 1px solid grey;
+            vertical-align: text-bottom;
+            float: right;
+            margin-top: 4px;
+          }
+          .cpu.bar {
+            height: 10px;
+            vertical-align: middle;
+            display: table-row;
+          }
+          .cpu.bar.good {
+            background-color: forestgreen;
+            display: table-cell;
+          }
+          .cpu.bar.partial {
+            background-color: yellow;
+            display: table-cell;
+          }
+          .cpu.bar.bad {
+            background-color: red;
+            display: table-cell;
+          }
+          .cpu.percent {
+            padding-right: 10px;
+            display: inline;
+          }
+        </style>
+  </head>
+  <body>
+    <h1>AProject Coverage Summary</h1>
+
+    <div class="header-block">
+      Generation date: (today)<br/>
+      <br/>
+      Block Coverage: 13/20 (65.00%)<br/>
+      Line Coverage: 7/14  (50.00%)<br/>
+    </div>
+
+    <br/>
+    <br/>
+
+    <table id="#content">
+      <thead>
+        <tr>
+          <th style="text-align:left;" rowspan="2">Name</th>
+          <th colspan="5">Line Coverage</th>
+          <th colspan="4">Block Coverage</th>
+        </tr>
+        <tr>
+          <th class="cpu" title="Covered">
+            <span class="hover-text">C</span>
+          </th>
+          <th class="cpu" title="Partially Covered">
+            <span class="hover-text">P</span>
+          </th>
+          <th class="cpu" title="Uncovered">
+            <span class="hover-text">U</span>
+          </th>
+          <th class="cpu">
+            <span>Total</span>
+          </th>
+          <th style="width:200px;" />
+          
+          <th class="cpu" title="Covered">
+            <span class="hover-text">C</span>
+          </th>
+          <th class="cpu" title="Uncovered">
+            <span class="hover-text">U</span>
+          </th>
+          <th class="cpu">
+            <span>Total</span>
+          </th>
+          <th style="width:200px;" />
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW</td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>

@@ -1,0 +1,198 @@
+﻿<UserControl x:Class="VSCoverageViewer.Views.CoverageGrid"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" mc:Ignorable="d" 
+             xmlns:local="clr-namespace:VSCoverageViewer"
+             xmlns:v="clr-namespace:VSCoverageViewer.Views"
+             xmlns:cvt="clr-namespace:VSCoverageViewer.Converters"
+             d:DesignWidth="600" d:DesignHeight="300">
+  <UserControl.Resources>
+
+    <ContextMenu x:Key="ContextMenu">
+      <MenuItem Header="Expand All Children" Command="{Binding ExpandTreeCmd}" />
+      <MenuItem Header="Collapse All Children" Command="{Binding CollapseTreeCmd}" />
+      <Separator />
+      <MenuItem Header="Expand All" Command="{Binding ExpandAllCmd}" />
+      <MenuItem Header="Collapse All" Command="{Binding CollapseAllCmd}" />
+    </ContextMenu>
+
+  </UserControl.Resources>
+  
+  <Grid>
+    <DataGrid x:Name="_grid"
+              AutoGenerateColumns="False"
+              IsReadOnly="True"
+              CanUserAddRows="False" CanUserDeleteRows="False"
+              HorizontalScrollBarVisibility="Auto"
+              VerticalScrollBarVisibility="Auto"
+              RowHeaderWidth="0"
+              SelectionUnit="FullRow"
+              SelectionMode="Extended"
+              ItemsSource="{Binding RowsAsFlatList}"
+              SelectedItem="{Binding SelectedCoverageRow}"
+              ContextMenu="{StaticResource ContextMenu}">
+      <DataGrid.Resources>
+
+        <Style TargetType="{x:Type DataGridRow}">
+          <Setter Property="Visibility" Value="{Binding IsVisible, Converter={StaticResource BoolToVisibility}}" />
+        </Style>
+
+        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"
+                         Color="LightGray"/>
+
+        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}"
+                         Color="#000"/>
+
+        <Style x:Key="LinesCell" TargetType="{x:Type DataGridCell}">
+          <Setter Property="Background" Value="{Binding LineCoverageColor}" />
+        </Style>
+
+        <Style x:Key="BlocksCell" TargetType="{x:Type DataGridCell}">
+          <Setter Property="Background" Value="{Binding BlockCoverageColor}" />
+        </Style>
+      </DataGrid.Resources>
+
+      <DataGrid.Columns>
+
+        <!-- Expand/collapse button, Image, Name column -->
+        <DataGridTemplateColumn Header="Name" Width="Auto"
+                                v:ColumnType.Tag="{x:Static local:Column.Name}">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition>
+                    <ColumnDefinition.Width>
+                      <Binding Path="RowDepth">
+                        <Binding.Converter>
+                          <cvt:MultiplyConverter Factor="14" />
+                        </Binding.Converter>
+                      </Binding>
+                    </ColumnDefinition.Width>
+                  </ColumnDefinition>
+                  <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+
+                  <Button Width="16" Height="16"
+                          Focusable="False"
+                          VerticalAlignment="Center"
+                          Command="{Binding ToggleExpandedCmd}">
+                    <Button.Style>
+                      <Style TargetType="Button" BasedOn="{StaticResource IconicBtn}">
+                        <Style.Triggers>
+                          <DataTrigger Binding="{Binding CanExpand}" Value="False">
+                            <Setter Property="Visibility" Value="Hidden" />
+                          </DataTrigger>
+                          <DataTrigger Binding="{Binding CanExpand}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                          </DataTrigger>
+
+                          <DataTrigger Binding="{Binding IsExpanded}" Value="False">
+                            <Setter Property="Content">
+                              <Setter.Value>
+                                <Path HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      Data="M 0 0 L 4 3.5 L 0 7 Z"
+                                      Stroke="#A5A5A5" />
+                              </Setter.Value>
+                            </Setter>
+                          </DataTrigger>
+                          <DataTrigger Binding="{Binding IsExpanded}" Value="True">
+                            <Setter Property="Content">
+                              <Setter.Value>
+                                <Path HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      Data="M 5 0 L 5 5 L 0 5 Z"
+                                      Stroke="#222"
+                                      Fill="#666" />
+                              </Setter.Value>
+                            </Setter>
+                          </DataTrigger>
+                        </Style.Triggers>
+                      </Style>
+                    </Button.Style>
+                  </Button>
+
+                  <Image Width="16" Height="16"
+                         Source="{Binding Model.NodeType, Converter={StaticResource NodeTypeToImageSource}}" />
+
+                  <TextBlock Margin="3 0"
+                             FontFamily="Consolas" FontSize="9.75pt"
+                             Text="{Binding DisplayName}"
+                             ToolTip="{Binding Model.FullName}" />
+
+                </StackPanel>
+              </Grid>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+
+
+        <!-- Coverage stats columns -->
+        <DataGridTextColumn Header="Total Lines" Width="Auto"
+                            Binding="{Binding Model.TotalLines}"
+                            CellStyle="{StaticResource LinesCell}"
+                            v:ColumnType.Tag="{x:Static local:Column.TotalLines}" />
+
+        <DataGridTextColumn Header="Lines Covered" Width="Auto"
+                            Binding="{Binding Model.LinesCovered}"
+                            CellStyle="{StaticResource LinesCell}"
+                            v:ColumnType.Tag="{x:Static local:Column.LinesCovered}"  />
+
+        <DataGridTextColumn Header="Lines Partially Covered" Width="Auto"
+                            Binding="{Binding Model.LinesPartiallyCovered}"
+                            CellStyle="{StaticResource LinesCell}"
+                            v:ColumnType.Tag="{x:Static local:Column.LinesPartiallyCovered}"  />
+
+        <DataGridTextColumn Header="Lines Not Covered" Width="Auto"
+                            Binding="{Binding Model.LinesNotCovered}"
+                            CellStyle="{StaticResource LinesCell}"
+                            v:ColumnType.Tag="{x:Static local:Column.LinesNotCovered}"  />
+
+        <DataGridTextColumn Header="Total Blocks" Width="Auto"
+                            Binding="{Binding Model.TotalBlocks}"
+                            CellStyle="{StaticResource BlocksCell}"
+                            v:ColumnType.Tag="{x:Static local:Column.TotalBlocks}"  />
+
+        <DataGridTextColumn Header="Blocks Covered" Width="Auto"
+                            Binding="{Binding Model.BlocksCovered}"
+                            CellStyle="{StaticResource BlocksCell}"
+                            v:ColumnType.Tag="{x:Static local:Column.BlocksCovered}"  />
+
+        <DataGridTextColumn Header="Blocks Not Covered" Width="Auto"
+                            Binding="{Binding Model.BlocksNotCovered}"
+                            CellStyle="{StaticResource BlocksCell}"
+                            v:ColumnType.Tag="{x:Static local:Column.BlocksNotCovered}"  />
+
+
+        <DataGridTextColumn Header="Lines Covered %" Width="Auto"
+                            Binding="{Binding Model.LinesCoveredRatio, StringFormat=P2}"
+                            CellStyle="{StaticResource LinesCell}"
+                            v:ColumnType.Tag="{x:Static local:Column.LinesCoveredPercent}"  />
+
+        <DataGridTextColumn Header="Lines Partially Covered %" Width="Auto"
+                            Binding="{Binding Model.LinesPartiallyCoveredRatio, StringFormat=P2}"
+                            CellStyle="{StaticResource LinesCell}"
+                            v:ColumnType.Tag="{x:Static local:Column.LinesPartiallyCoveredPercent}"  />
+
+        <DataGridTextColumn Header="Lines Not Covered %" Width="Auto"
+                            Binding="{Binding Model.LinesNotCoveredRatio, StringFormat=P2}"
+                            CellStyle="{StaticResource LinesCell}"
+                            v:ColumnType.Tag="{x:Static local:Column.LinesNotCoveredPercent}"  />
+
+        <DataGridTextColumn Header="Blocks Covered %" Width="Auto"
+                            Binding="{Binding Model.BlocksCoveredRatio, StringFormat=P2}"
+                            CellStyle="{StaticResource BlocksCell}"
+                            v:ColumnType.Tag="{x:Static local:Column.BlocksCoveredPercent}"  />
+
+        <DataGridTextColumn Header="Blocks Not Covered %" Width="Auto"
+                            Binding="{Binding Model.BlocksNotCoveredRatio, StringFormat=P2}"
+                            CellStyle="{StaticResource BlocksCell}"
+                            v:ColumnType.Tag="{x:Static local:Column.BlocksNotCoveredPercent}"  />
+
+      </DataGrid.Columns>
+    </DataGrid>
+  </Grid>
+</UserControl>
