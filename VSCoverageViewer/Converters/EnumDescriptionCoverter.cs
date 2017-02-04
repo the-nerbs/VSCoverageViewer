@@ -50,7 +50,14 @@ namespace VSCoverageViewer.Converters
         }
 
 
-
+        /// <summary>
+        /// Gets the description of an enum value.
+        /// </summary>
+        /// <param name="value">The enum value.</param>
+        /// <returns>
+        /// The description provided in the member's <see cref="DescriptionAttribute"/>, or the
+        /// result of <c>value.ToString()</c> if no description attribute is found.
+        /// </returns>
         private static string GetDescription(object value)
         {
             DescriptionAttribute attr = value

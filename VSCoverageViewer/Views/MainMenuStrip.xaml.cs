@@ -20,6 +20,9 @@ namespace VSCoverageViewer.Views
     /// </summary>
     public partial class MainMenuStrip : UserControl
     {
+        /// <summary>
+        /// Initializes a new instance of <see cref="MainMenuStrip"/>.
+        /// </summary>
         public MainMenuStrip()
         {
             InitializeComponent();

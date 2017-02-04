@@ -26,12 +26,18 @@ namespace VSCoverageViewer.Views
         private readonly IMessenger _messenger;
 
 
+        /// <summary>
+        /// Gets the view model.
+        /// </summary>
         private ICoverageGridViewModel ViewModel
         {
             get { return DataContext as ICoverageGridViewModel; }
         }
 
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="CoverageGrid"/>.
+        /// </summary>
         public CoverageGrid()
         {
             InitializeComponent();
@@ -41,6 +47,10 @@ namespace VSCoverageViewer.Views
         }
 
 
+        /// <summary>
+        /// Handles a column visibility changed application message.
+        /// </summary>
+        /// <param name="msg">The message data.</param>
         private void HandleColumnVisibilityChanged(ColumnVisibilityChangedMessage msg)
         {
             foreach (var column in _grid.Columns)

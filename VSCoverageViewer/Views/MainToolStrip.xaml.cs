@@ -21,12 +21,9 @@ namespace VSCoverageViewer.Views
     /// </summary>
     public partial class MainToolStrip : UserControl
     {
-        internal IMainToolbarViewModel ViewModel
-        {
-            get { return DataContext as IMainToolbarViewModel; }
-        }
-
-
+        /// <summary>
+        /// Initializes a new instance of <see cref="MainToolStrip"/>.
+        /// </summary>
         public MainToolStrip()
         {
             InitializeComponent();
