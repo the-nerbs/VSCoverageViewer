@@ -11,20 +11,28 @@ using VSCoverageViewer.Models;
 
 namespace VSCoverageViewer.Converters
 {
+    /// <summary>
+    /// Converts a <see cref="CoverageNodeType"/> to it's associated image.
+    /// </summary>
     [ValueConversion(typeof(CoverageNodeType), typeof(ImageSource))]
-    class NodeTypeToImageConverter : IValueConverter
+    internal class NodeTypeToImageConverter : IValueConverter
     {
+        /// <summary>
+        /// Converts a boxed <see cref="CoverageNodeType"/> to an <see cref="ImageSource"/>.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <param name="targetType">The type to convert to.</param>
+        /// <param name="parameter">Unused.</param>
+        /// <param name="culture">Unused.</param>
+        /// <returns>The converted value.</returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            Contract.RequiresNotNull(value, nameof(value));
-
-            Contract.Requires(value is CoverageNodeType,
-                              "Converted value must be a " + nameof(CoverageNodeType),
-                              nameof(value));
-
-            Contract.Requires(typeof(ImageSource).IsAssignableFrom(targetType),
-                              "Target type must derive from ImageSource",
-                              nameof(targetType));
+            if (value == null ||
+                !(value is CoverageNodeType) ||
+                targetType != typeof(ImageSource))
+            {
+                return DependencyProperty.UnsetValue;
+            }
 
             string resourceKey;
 
@@ -58,9 +66,13 @@ namespace VSCoverageViewer.Converters
             return Application.Current.TryFindResource(resourceKey);
         }
 
+
+        /// <summary>
+        /// Unsupported.
+        /// </summary>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            return DependencyProperty.UnsetValue;
         }
     }
 }

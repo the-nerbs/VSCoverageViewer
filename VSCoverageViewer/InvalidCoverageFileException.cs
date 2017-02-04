@@ -7,8 +7,11 @@ using System.Threading.Tasks;
 
 namespace VSCoverageViewer
 {
+    /// <summary>
+    /// Exception thrown when a coverage file is found to be invalid.
+    /// </summary>
     [Serializable]
-    public class InvalidCoverageFileException : Exception
+    internal class InvalidCoverageFileException : Exception
     {
         public InvalidCoverageFileException()
         { }

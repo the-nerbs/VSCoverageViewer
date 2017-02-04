@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace VSCoverageViewer
 {
+    /// <summary>
+    /// Contains constants used for identifying application resources.
+    /// </summary>
     internal static class AppResourceKeys
     {
         public const string OpenFileImg = nameof(OpenFileImg);

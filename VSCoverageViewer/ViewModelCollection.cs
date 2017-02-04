@@ -8,12 +8,24 @@ using System.Threading.Tasks;
 
 namespace VSCoverageViewer
 {
-    class ViewModelCollection<TModel, TViewModel> : ObservableCollection<TViewModel>
+    /// <summary>
+    /// A subclass of <see cref="ObservableCollection{T}"/> which keeps this collection in sync 
+    /// with another collection.  This is intended to be used to keep a collection of view models
+    /// in sync with a collection of models.
+    /// </summary>
+    /// <typeparam name="TModel">The model type.</typeparam>
+    /// <typeparam name="TViewModel">The view model type.</typeparam>
+    internal class ViewModelCollection<TModel, TViewModel> : ObservableCollection<TViewModel>
     {
         private readonly ObservableCollection<TModel> _boundCollection;
         private readonly Func<TModel, TViewModel> _factory;
 
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="ViewModelCollection{TModel, TViewModel}"/>.
+        /// </summary>
+        /// <param name="boundCollection">The collection to bind this to.</param>
+        /// <param name="vmFactory">A function which gets a view model for a model.</param>
         public ViewModelCollection(ObservableCollection<TModel> boundCollection, Func<TModel, TViewModel> vmFactory)
         {
             if (boundCollection == null)

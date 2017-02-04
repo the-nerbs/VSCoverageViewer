@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace VSCoverageViewer.Messaging
 {
-    class ColumnVisibilityChangedMessage
+    /// <summary>
+    /// Message type sent to notify that column visibility properties have changed.
+    /// </summary>
+    internal class ColumnVisibilityChangedMessage
     {
     }
 }

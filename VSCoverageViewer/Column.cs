@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace VSCoverageViewer
 {
-    public enum Column
+    /// <summary>
+    /// Column tags used to identify coverage data columns.
+    /// </summary>
+    internal enum Column
     {
         Name,
 

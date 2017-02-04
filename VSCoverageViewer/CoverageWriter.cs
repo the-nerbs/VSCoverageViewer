@@ -16,10 +16,17 @@ using VSCoverageViewer.Serialization.Export;
 
 namespace VSCoverageViewer
 {
-    class CoverageWriter
+    /// <summary>
+    /// Provides the ability to write coverage data files.
+    /// </summary>
+    internal class CoverageWriter
     {
         private readonly XmlDocument _schemaDoc;
 
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="CoverageWriter"/>.
+        /// </summary>
         public CoverageWriter()
         {
             _schemaDoc = new XmlDocument();
@@ -27,6 +34,11 @@ namespace VSCoverageViewer
         }
 
 
+        /// <summary>
+        /// Writes a coverage XML file in the same format as Visual Studio.
+        /// </summary>
+        /// <param name="models">The models to include in the coverage file.</param>
+        /// <param name="path">The path to write to.</param>
         public void WriteCoverageXml(IEnumerable<CoverageNodeModel> models, string path)
         {
             // Here be a bit of ugly: I needed to jump through a couple hoops to get
@@ -70,6 +82,12 @@ namespace VSCoverageViewer
             }
         }
 
+        /// <summary>
+        /// Writes a coverage summary in HTML format.
+        /// </summary>
+        /// <param name="models">The models to include in the coverage file.</param>
+        /// <param name="name">The project name to put in the coverage report.</param>
+        /// <param name="path">The path to write to.</param>
         public void WriteHtmlSummary(IEnumerable<CoverageNodeModel> models, string name, string path)
         {
             CoverageDSPriv merged = ConcatenateFiles(models.Select(CreateSerializable));

@@ -6,7 +6,9 @@
 
 namespace VSCoverageViewer
 {
-    // helper class for FxCop.
+    /// <summary>
+    /// Helper class for FxCop.  Indicates that a parameter is verified as being non-null.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Parameter)]
     internal sealed class ValidatedNotNullAttribute : Attribute
     { }

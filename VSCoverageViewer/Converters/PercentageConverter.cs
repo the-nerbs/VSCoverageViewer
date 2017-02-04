@@ -9,9 +9,20 @@ using System.Windows.Data;
 
 namespace VSCoverageViewer.Converters
 {
+    /// <summary>
+    /// Converts a percentage value to a string. This converter can round-trip.
+    /// </summary>
     [ValueConversion(typeof(double), typeof(string))]
-    class PercentageConverter : IValueConverter
+    internal class PercentageConverter : IValueConverter
     {
+        /// <summary>
+        /// Converts from a percentage, as a double, to a string.
+        /// </summary>
+        /// <param name="value">The percentage value.</param>
+        /// <param name="targetType">The target type. Must be <see cref="string"/>.</param>
+        /// <param name="parameter">Unused.</param>
+        /// <param name="culture">The culture to perform the conversion in.</param>
+        /// <returns>The percentage, as a string.</returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null ||
@@ -25,6 +36,15 @@ namespace VSCoverageViewer.Converters
             return percent.ToString("0", culture) + " %";
         }
 
+
+        /// <summary>
+        /// Converts a percentage string back to a double.
+        /// </summary>
+        /// <param name="value">The percentage string to convert.</param>
+        /// <param name="targetType">The target type. Must be <see cref="double"/>.</param>
+        /// <param name="parameter">Unused.</param>
+        /// <param name="culture">The culture to perform the conversion in.</param>
+        /// <returns>The percentage, as a double.</returns>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var str = value as string;
@@ -40,7 +60,7 @@ namespace VSCoverageViewer.Converters
                 }
 
                 double percent;
-                if (double.TryParse(str, out percent))
+                if (double.TryParse(str, NumberStyles.Float, culture, out percent))
                 {
                     return (percent / 100.0);
                 }

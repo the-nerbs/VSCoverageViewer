@@ -11,8 +11,16 @@ using VSCoverageViewer.Serialization;
 
 namespace VSCoverageViewer
 {
-    class CoverageReader
+    /// <summary>
+    /// Provides the ability to read coverage data.
+    /// </summary>
+    internal class CoverageReader
     {
+        /// <summary>
+        /// Reads a coverage XML file exported from Visual Studio.
+        /// </summary>
+        /// <param name="path">The path to the coverage XML file.</param>
+        /// <returns>A <see cref="CoverageNodeModel"/> instance containing the coverage data.</returns>
         public CoverageNodeModel ReadCoverageXml(string path)
         {
             var ser = new XmlSerializer(typeof(CoverageDSPriv));

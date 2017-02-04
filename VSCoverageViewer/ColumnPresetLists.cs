@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace VSCoverageViewer
 {
-    class ColumnPresetLists
+    /// <summary>
+    /// Contains definitions for column visibility presets.
+    /// </summary>
+    internal static class ColumnPresetLists
     {
         #region Presets
 
@@ -81,6 +84,11 @@ namespace VSCoverageViewer
         #endregion
 
 
+        /// <summary>
+        /// Gets the collection of columns which are visible for the given preset.
+        /// </summary>
+        /// <param name="preset">The preset.</param>
+        /// <returns>The collection of visible columns.</returns>
         internal static IEnumerable<Column> GetPreset(ColumnPreset preset)
         {
             Debug.Assert(preset != ColumnPreset.Custom);

@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace VSCoverageViewer
 {
-    public enum ColumnPreset
+    /// <summary>
+    /// Column presets used to identify predefined column visibilities.
+    /// </summary>
+    internal enum ColumnPreset
     {
         All,
 

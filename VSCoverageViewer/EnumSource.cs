@@ -8,17 +8,27 @@ using System.Windows.Markup;
 
 namespace VSCoverageViewer
 {
-    class EnumMemberInfo
+    /// <summary>
+    /// Helper for <see cref="EnumSource"/>.
+    /// </summary>
+    internal class EnumMemberInfo
     {
         public object Value { get; set; }
         public string Display { get; set; }
     }
 
-    class EnumSource : MarkupExtension
+    /// <summary>
+    /// A XAML markup extension which provides a collection containing the set of defined values
+    /// for an enum type.
+    /// </summary>
+    internal class EnumSource : MarkupExtension
     {
         private Type _enumType;
 
 
+        /// <summary>
+        /// Gets or sets the enum type.
+        /// </summary>
         [ConstructorArgument("enumType")]
         public Type EnumType
         {
@@ -33,12 +43,22 @@ namespace VSCoverageViewer
         }
 
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="EnumSource"/> which provides values from the
+        /// given enum type.
+        /// </summary>
+        /// <param name="enumType">The enum type.</param>
         public EnumSource(Type enumType)
         {
             EnumType = enumType;
         }
 
 
+        /// <summary>
+        /// Gets the collection of values defined for the enum type. 
+        /// </summary>
+        /// <param name="serviceProvider">Unused.</param>
+        /// <returns>A collection of values defined for the enum type.</returns>
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
             return Enum.GetValues(_enumType)
@@ -51,6 +71,7 @@ namespace VSCoverageViewer
                        })
                        .ToArray();
         }
+
 
         private bool ValueIsBindable(object enumValue)
         {
