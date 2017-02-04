@@ -307,6 +307,18 @@ namespace VSCoverageViewer.ViewModels
             }
         }
 
+        /// <summary>
+        /// Sets the expanded state but does not notify children. Used when rows are expanded or
+        /// collapsed en mass (such as expand/collapse all) to avoid evaluating the visibility
+        /// of child nodes once for each of its ancestors.
+        /// </summary>
+        /// <param name="isExpanded">The expanded state of this node.</param>
+        internal void SetExpandedWithoutNotifyingChildren(bool isExpanded)
+        {
+            SetIfChanged(ref _isExpanded, isExpanded, nameof(IsExpanded));
+            IsVisible = DetermineVisibility();
+        }
+
 
         /// <summary>
         /// Determines the visibility of this node.
@@ -317,21 +329,21 @@ namespace VSCoverageViewer.ViewModels
             // check the parent chain for any collapsed nodes.
             bool parentsExpanded = true;
 
-            var parent = Parent;
+            CoverageNodeViewModel parent = Parent;
+
             while (parentsExpanded &&
                    parent != null)
             {
                 parentsExpanded = parent.IsExpanded;
                 parent = parent.Parent;
             }
-
+            
             // a parent somewhere up the chain is collapsed; this is not visible.
             if (!parentsExpanded)
             {
                 return false;
             }
-
-
+            
             return true;
         }
     }

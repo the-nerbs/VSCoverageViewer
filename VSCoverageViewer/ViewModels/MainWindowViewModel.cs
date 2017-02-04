@@ -313,7 +313,7 @@ namespace VSCoverageViewer.ViewModels
         {
             foreach (var row in RowsAsFlatList)
             {
-                row.IsExpanded = true;
+                row.SetExpandedWithoutNotifyingChildren(isExpanded: true);
             }
         }
 
@@ -324,7 +324,7 @@ namespace VSCoverageViewer.ViewModels
         {
             foreach (var row in RowsAsFlatList)
             {
-                row.IsExpanded = false;
+                row.SetExpandedWithoutNotifyingChildren(isExpanded: false);
             }
         }
 
@@ -347,7 +347,7 @@ namespace VSCoverageViewer.ViewModels
             expandNode = 
                 (vm) =>
                 {
-                    vm.IsExpanded = true;
+                    vm.SetExpandedWithoutNotifyingChildren(isExpanded: true);
 
                     foreach (var item in vm.Children)
                     {
@@ -367,7 +367,7 @@ namespace VSCoverageViewer.ViewModels
             collapseNode =
                 (vm) =>
                 {
-                    vm.IsExpanded = false;
+                    vm.SetExpandedWithoutNotifyingChildren(isExpanded: false);
 
                     foreach (var item in vm.Children)
                     {
