@@ -226,6 +226,24 @@ namespace VSCoverageViewer.Models
 
 
         /// <summary>
+        /// Refreshes the coverage counts based on the sum of the all children's counts. If this 
+        /// node has no children, this is ignored.
+        /// </summary>
+        public void RecountCoverage()
+        {
+            if (Children.Count > 0)
+            {
+                LinesCovered          = Children.Sum(ch => ch.LinesCovered);
+                LinesPartiallyCovered = Children.Sum(ch => ch.LinesPartiallyCovered);
+                LinesNotCovered       = Children.Sum(ch => ch.LinesNotCovered);
+
+                BlocksCovered         = Children.Sum(ch => ch.BlocksCovered);
+                BlocksNotCovered      = Children.Sum(ch => ch.BlocksNotCovered);
+            }
+        }
+
+
+        /// <summary>
         /// Computes a percentage from the value and total amounts.
         /// </summary>
         private static double Ratio(double value, double total)

@@ -15,15 +15,17 @@
       <Separator />
       <MenuItem Header="Expand All" Command="{Binding ExpandAllCmd}" />
       <MenuItem Header="Collapse All" Command="{Binding CollapseAllCmd}" />
+      <Separator />
+      <MenuItem Header="Remove Node" Command="{Binding RemoveNodeCmd}"/>
     </ContextMenu>
 
   </UserControl.Resources>
-  
+
   <Grid>
     <DataGrid x:Name="_grid"
               AutoGenerateColumns="False"
               IsReadOnly="True"
-              CanUserAddRows="False" CanUserDeleteRows="False"
+              CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False"
               HorizontalScrollBarVisibility="Auto"
               VerticalScrollBarVisibility="Auto"
               RowHeaderWidth="0"

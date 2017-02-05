@@ -185,6 +185,18 @@ namespace VSCoverageViewer.ViewModels
             IsExpanded = !IsExpanded;
         }
 
+        /// <summary>
+        /// Removes a node from the children.
+        /// </summary>
+        /// <param name="childViewModel">The child to remove.</param>
+        public void RemoveChild(CoverageNodeViewModel childViewModel)
+        {
+            if (Children.Remove(childViewModel))
+            {
+                Model.RecountCoverage();
+            }
+        }
+
 
         /// <summary>
         /// Attaches a new model to this view model.

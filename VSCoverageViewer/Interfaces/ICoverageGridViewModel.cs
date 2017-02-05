@@ -53,6 +53,11 @@ namespace VSCoverageViewer.Interfaces
         /// </summary>
         RelayCommand CollapseAllCmd { get; }
 
+        /// <summary>
+        /// Gets a command which removes the selected coverage node.
+        /// </summary>
+        RelayCommand RemoveNodeCmd { get; }
+
 
         /// <summary>
         /// Determines the visibility of a column.

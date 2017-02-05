@@ -36,12 +36,7 @@ namespace VSCoverageViewer
 
             model.Name = path;
 
-            model.LinesCovered          = model.Children.Sum(ch => ch.LinesCovered);
-            model.LinesPartiallyCovered = model.Children.Sum(ch => ch.LinesPartiallyCovered);
-            model.LinesNotCovered       = model.Children.Sum(ch => ch.LinesNotCovered);
-
-            model.BlocksCovered         = model.Children.Sum(ch => ch.BlocksCovered);
-            model.BlocksNotCovered      = model.Children.Sum(ch => ch.BlocksNotCovered);
+            model.RecountCoverage();
 
             return model;
         }

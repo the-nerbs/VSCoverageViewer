@@ -115,6 +115,9 @@ namespace VSCoverageViewer.ViewModels
         /// <inheritdoc />
         public RelayCommand CollapseAllCmd { get; }
 
+        /// <inheritdoc />
+        public RelayCommand RemoveNodeCmd { get; }
+
 
         /// <summary>
         /// Initializes a new instance of <see cref="MainWindowViewModel"/>.
@@ -150,6 +153,8 @@ namespace VSCoverageViewer.ViewModels
             CollapseTreeCmd = new RelayCommand(CollapseSelectedTree, HaveSelectedNode);
             ExpandAllCmd = new RelayCommand(ExpandAll, HaveRows);
             CollapseAllCmd = new RelayCommand(CollapseAll, HaveRows);
+
+            RemoveNodeCmd = new RelayCommand(RemoveSelectedNode, HaveSelectedNode);
 
             CoverageRows.CollectionChanged += CoverageRowsCollectionChanged;
         }
@@ -378,6 +383,33 @@ namespace VSCoverageViewer.ViewModels
             collapseNode(SelectedCoverageRow);
         }
 
+
+        /// <summary>
+        /// Removes the selected node and all of its children.
+        /// </summary>
+        private void RemoveSelectedNode()
+        {
+            if (SelectedCoverageRow != null)
+            {
+                CoverageNodeViewModel parent = SelectedCoverageRow.Parent;
+
+                if (parent != null)
+                {
+                    // non-root node.
+                    parent.RemoveChild(SelectedCoverageRow);
+
+                    // rebuild the row list.
+                    RebuildRowList();
+                }
+                else
+                {
+                    // removing a root, just remove from CoverageRows and let the
+                    // CollectionChanged handler deal with updating the list.
+                    CoverageRows.Remove(SelectedCoverageRow);
+                }
+            }
+        }
+
         #endregion
 
 
@@ -417,6 +449,14 @@ namespace VSCoverageViewer.ViewModels
         /// <param name="sender">Unused.</param>
         /// <param name="e">Unused.</param>
         private void CoverageRowsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            RebuildRowList();
+        }
+
+        /// <summary>
+        /// Rebuilds the flat list of rows.
+        /// </summary>
+        private void RebuildRowList()
         {
             var flatList = new List<CoverageNodeViewModel>();
 
