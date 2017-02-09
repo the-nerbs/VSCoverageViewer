@@ -20,7 +20,21 @@ namespace VSCoverageViewer.Models
         CoverageFile,
         Module,
         Namespace,
+        Type,
+        Function,
+    }
+
+    /// <summary>
+    /// Indicates what code (C#) construct this node represents.
+    /// </summary>
+    internal enum CodeElementType
+    {
+        CoverageFile,
+        Module,
+        Namespace,
         Class,
+        Struct,
+        Property,
         Function,
     }
 
@@ -42,6 +56,11 @@ namespace VSCoverageViewer.Models
         /// Gets the type of coverage data this represents.
         /// </summary>
         public CoverageNodeType NodeType { get; }
+
+        /// <summary>
+        /// Gets code element type this node represents.
+        /// </summary>
+        public CodeElementType CodeType { get; internal set; }
 
         /// <summary>
         /// Gets the parent coverage data of this node, or null if this is a root node.
@@ -243,6 +262,32 @@ namespace VSCoverageViewer.Models
         public CoverageNodeModel(CoverageNodeType type)
         {
             NodeType = type;
+
+            switch (type)
+            {
+                case CoverageNodeType.CoverageFile:
+                    CodeType = CodeElementType.CoverageFile;
+                    break;
+
+                case CoverageNodeType.Module:
+                    CodeType = CodeElementType.Module;
+                    break;
+
+                case CoverageNodeType.Namespace:
+                    CodeType = CodeElementType.Namespace;
+                    break;
+
+                case CoverageNodeType.Type:
+                    CodeType = CodeElementType.Class;
+                    break;
+
+                case CoverageNodeType.Function:
+                    CodeType = CodeElementType.Function;
+                    break;
+
+                default:
+                    throw Utility.UnreachableCode("unexpected node type.");
+            }
 
             AdditionalData = new Dictionary<string, object>();
 

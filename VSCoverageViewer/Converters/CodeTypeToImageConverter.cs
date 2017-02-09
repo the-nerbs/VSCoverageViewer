@@ -12,13 +12,13 @@ using VSCoverageViewer.Models;
 namespace VSCoverageViewer.Converters
 {
     /// <summary>
-    /// Converts a <see cref="CoverageNodeType"/> to it's associated image.
+    /// Converts a <see cref="CodeElementType"/> to it's associated image.
     /// </summary>
-    [ValueConversion(typeof(CoverageNodeType), typeof(ImageSource))]
-    internal class NodeTypeToImageConverter : IValueConverter
+    [ValueConversion(typeof(CodeElementType), typeof(ImageSource))]
+    internal class CodeTypeToImageConverter : IValueConverter
     {
         /// <summary>
-        /// Converts a boxed <see cref="CoverageNodeType"/> to an <see cref="ImageSource"/>.
+        /// Converts a boxed <see cref="CodeElementType"/> to an <see cref="ImageSource"/>.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <param name="targetType">The type to convert to.</param>
@@ -28,7 +28,7 @@ namespace VSCoverageViewer.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null ||
-                !(value is CoverageNodeType) ||
+                !(value is CodeElementType) ||
                 targetType != typeof(ImageSource))
             {
                 return DependencyProperty.UnsetValue;
@@ -36,25 +36,33 @@ namespace VSCoverageViewer.Converters
 
             string resourceKey;
 
-            switch ((CoverageNodeType)value)
+            switch ((CodeElementType)value)
             {
-                case CoverageNodeType.CoverageFile:
+                case CodeElementType.CoverageFile:
                     resourceKey = AppResourceKeys.TotalsImg;
                     break;
 
-                case CoverageNodeType.Module:
+                case CodeElementType.Module:
                     resourceKey = AppResourceKeys.ModuleImg;
                     break;
 
-                case CoverageNodeType.Namespace:
+                case CodeElementType.Namespace:
                     resourceKey = AppResourceKeys.NamespaceImg;
                     break;
 
-                case CoverageNodeType.Class:
+                case CodeElementType.Class:
                     resourceKey = AppResourceKeys.ClassImg;
                     break;
 
-                case CoverageNodeType.Function:
+                case CodeElementType.Struct:
+                    resourceKey = AppResourceKeys.StructImg;
+                    break;
+
+                case CodeElementType.Property:
+                    resourceKey = AppResourceKeys.PropertyImg;
+                    break;
+
+                case CodeElementType.Function:
                     resourceKey = AppResourceKeys.FunctionImg;
                     break;
 

@@ -25,6 +25,10 @@ namespace VSCoverageViewer
     /// </devdoc>
     internal sealed class MetadataHelper
     {
+        private const BindingFlags LoadFlags = BindingFlags.Instance | BindingFlags.Static |
+                                               BindingFlags.Public | BindingFlags.NonPublic |
+                                               BindingFlags.DeclaredOnly;
+
         // Good references (IL DASM): System.Convert, System.Runtime.InteropServices.Marshal
         // TODO (metadata): verify how unsigned types are named. ECMA-335 suggests differently.
         private static readonly IReadOnlyDictionary<Type, string> IlSpecialNames =
@@ -101,14 +105,14 @@ namespace VSCoverageViewer
                         // nothing to simplify
                         break;
 
-                    case CoverageNodeType.Class:
-                        LoadClassMetadata(model);
+                    case CoverageNodeType.Type:
+                        LoadTypeMetadata(model);
                         break;
 
                     case CoverageNodeType.Function:
                         {
                             // read the metadata for the declaring type.
-                            var cls = model.ClosestAncestor(CoverageNodeType.Class);
+                            var cls = model.ClosestAncestor(CoverageNodeType.Type);
 
                             if (cls != null)
                             {
@@ -133,10 +137,10 @@ namespace VSCoverageViewer
         /// Loads a class's metadata.
         /// </summary>
         /// <param name="classNode">The class node to read into.</param>
-        private void LoadClassMetadata(CoverageNodeModel classNode)
+        private void LoadTypeMetadata(CoverageNodeModel classNode)
         {
             Debug.Assert(classNode != null);
-            Debug.Assert(classNode.NodeType == CoverageNodeType.Class);
+            Debug.Assert(classNode.NodeType == CoverageNodeType.Type);
 
             Module mod = GetModule(classNode);
 
@@ -146,14 +150,10 @@ namespace VSCoverageViewer
             string className = GetCleanTypeName(type);
             classNode.Name = className;
 
-            var flags = BindingFlags.Instance   | BindingFlags.Static |
-                        BindingFlags.Public     | BindingFlags.NonPublic |
-                        BindingFlags.DeclaredOnly;
-
             var methods = new List<CoverageNodeModel>(classNode.Children.Where(ch => ch.NodeType == CoverageNodeType.Function));
 
 
-            foreach (var ctor in type.GetConstructors(flags))
+            foreach (var ctor in type.GetConstructors(LoadFlags))
             {
                 // ".cctor", ".ctor" - see: ECMA-335, II.10.5 Special Members
                 string coverageName =
@@ -168,7 +168,7 @@ namespace VSCoverageViewer
                 }
             }
 
-            foreach (var method in type.GetMethods(flags))
+            foreach (var method in type.GetMethods(LoadFlags))
             {
                 string coverageName = method.Name + GetCoverageParameterString(method);
 
@@ -178,6 +178,11 @@ namespace VSCoverageViewer
                 {
                     LoadMethodMetadata(node, type, method);
                 }
+            }
+
+            if (type.IsValueType)
+            {
+                classNode.CodeType = CodeElementType.Struct;
             }
 
             classNode.HasReadMetadata = true;
@@ -194,16 +199,24 @@ namespace VSCoverageViewer
             Debug.Assert(methodNode != null);
             Debug.Assert(methodNode.NodeType == CoverageNodeType.Function);
             Debug.Assert(methodNode.Parent != null);
-            Debug.Assert(methodNode.Parent.NodeType == CoverageNodeType.Class);
+            Debug.Assert(methodNode.Parent.NodeType == CoverageNodeType.Type);
 
             Module mod = GetModule(methodNode);
 
-            string methodName = methodNode.Name;
-            int lparenIndex = methodName.IndexOf('(');
-
-            methodName = methodName.Substring(0, lparenIndex);
-
             methodNode.Name = GetCleanMethodName(methodInfo);
+
+            if (methodInfo.IsSpecialName)
+            {
+                foreach (var prop in declaringType.GetProperties(LoadFlags))
+                {
+                    if (methodInfo.Equals(prop.GetMethod) ||
+                        methodInfo.Equals(prop.SetMethod))
+                    {
+                        methodNode.CodeType = CodeElementType.Property;
+                        break;
+                    }
+                }
+            }
 
             methodNode.HasReadMetadata = true;
         }
@@ -315,7 +328,7 @@ namespace VSCoverageViewer
             }
             else if (method is ConstructorInfo)
             {
-                sb.Append(method.DeclaringType.Name);
+                sb.Append(GetCleanTypeName(method.DeclaringType));
             }
 
             if (method.IsGenericMethod)
@@ -438,7 +451,7 @@ namespace VSCoverageViewer
                    model.NodeType != CoverageNodeType.CoverageFile &&
                    model.NodeType != CoverageNodeType.Module)
             {
-                if (model.NodeType != CoverageNodeType.Class)
+                if (model.NodeType != CoverageNodeType.Type)
                 {
                     parts.Push(model.Name);
                 }

@@ -106,7 +106,7 @@ namespace VSCoverageViewer
 
         private static CoverageNodeModel ReadClass(ClassCoverageInfo cls)
         {
-            var model = new CoverageNodeModel(CoverageNodeType.Class);
+            var model = new CoverageNodeModel(CoverageNodeType.Type);
 
             model.Name = cls.ClassName;
 

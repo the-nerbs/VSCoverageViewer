@@ -121,7 +121,7 @@
                   </Button>
 
                   <Image Width="16" Height="16"
-                         Source="{Binding Model.NodeType, Converter={StaticResource NodeTypeToImageSource}}" />
+                         Source="{Binding Model.CodeType, Converter={StaticResource CodeTypeToImageSource}}" />
 
                   <TextBlock Margin="3 0"
                              FontFamily="Consolas" FontSize="9.75pt"

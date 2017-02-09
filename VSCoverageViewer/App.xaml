@@ -13,7 +13,7 @@
 
     <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
     <cvt:EnumDescriptionConverter x:Key="DescriptionCvt" />
-    <cvt:NodeTypeToImageConverter x:Key="NodeTypeToImageSource" />
+    <cvt:CodeTypeToImageConverter x:Key="CodeTypeToImageSource" />
     <cvt:PercentageConverter x:Key="PercentageCvt" />
 
 
