@@ -38,10 +38,6 @@
               ContextMenu="{StaticResource ContextMenu}">
       <DataGrid.Resources>
 
-        <Style TargetType="{x:Type DataGridRow}">
-          <Setter Property="Visibility" Value="{Binding IsVisible, Converter={StaticResource BoolToVisibility}}" />
-        </Style>
-
         <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"
                          Color="LightGray"/>
 
@@ -64,72 +60,60 @@
                                 v:ColumnType.Tag="{x:Static local:Column.Name}">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <Grid>
-                <Grid.ColumnDefinitions>
-                  <ColumnDefinition>
-                    <ColumnDefinition.Width>
-                      <Binding Path="RowDepth">
-                        <Binding.Converter>
-                          <cvt:MultiplyConverter Factor="14" />
-                        </Binding.Converter>
-                      </Binding>
-                    </ColumnDefinition.Width>
-                  </ColumnDefinition>
-                  <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+              <DataTemplate.Resources>
+                <cvt:RowIndentConverter x:Key="indentConverter" IndentDepth="14" />
+              </DataTemplate.Resources>
+              <StackPanel Orientation="Horizontal" Margin="{Binding RowDepth, Converter={StaticResource indentConverter}, Mode=OneWay}">
+                <Button Width="16" Height="16"
+                        Focusable="False"
+                        VerticalAlignment="Center"
+                        Command="{Binding ToggleExpandedCmd}">
+                  <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource IconicBtn}">
+                      <Style.Triggers>
+                        <DataTrigger Binding="{Binding CanExpand}" Value="False">
+                          <Setter Property="Visibility" Value="Hidden" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding CanExpand}" Value="True">
+                          <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <DataTrigger Binding="{Binding IsExpanded}" Value="False">
+                          <Setter Property="Content">
+                            <Setter.Value>
+                              <Path HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Data="M 0 0 L 4 3.5 L 0 7 Z"
+                                    Stroke="#A5A5A5" />
+                            </Setter.Value>
+                          </Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsExpanded}" Value="True">
+                          <Setter Property="Content">
+                            <Setter.Value>
+                              <Path HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Data="M 5 0 L 5 5 L 0 5 Z"
+                                    Stroke="#222"
+                                    Fill="#666" />
+                            </Setter.Value>
+                          </Setter>
+                        </DataTrigger>
+                      </Style.Triggers>
+                    </Style>
+                  </Button.Style>
+                </Button>
 
-                  <Button Width="16" Height="16"
-                          Focusable="False"
-                          VerticalAlignment="Center"
-                          Command="{Binding ToggleExpandedCmd}">
-                    <Button.Style>
-                      <Style TargetType="Button" BasedOn="{StaticResource IconicBtn}">
-                        <Style.Triggers>
-                          <DataTrigger Binding="{Binding CanExpand}" Value="False">
-                            <Setter Property="Visibility" Value="Hidden" />
-                          </DataTrigger>
-                          <DataTrigger Binding="{Binding CanExpand}" Value="True">
-                            <Setter Property="Visibility" Value="Visible" />
-                          </DataTrigger>
+                <Image Width="16" Height="16"
+                       Source="{Binding Model.CodeType, Converter={StaticResource CodeTypeToImageSource}}" />
 
-                          <DataTrigger Binding="{Binding IsExpanded}" Value="False">
-                            <Setter Property="Content">
-                              <Setter.Value>
-                                <Path HorizontalAlignment="Center"
-                                      VerticalAlignment="Center"
-                                      Data="M 0 0 L 4 3.5 L 0 7 Z"
-                                      Stroke="#A5A5A5" />
-                              </Setter.Value>
-                            </Setter>
-                          </DataTrigger>
-                          <DataTrigger Binding="{Binding IsExpanded}" Value="True">
-                            <Setter Property="Content">
-                              <Setter.Value>
-                                <Path HorizontalAlignment="Center"
-                                      VerticalAlignment="Center"
-                                      Data="M 5 0 L 5 5 L 0 5 Z"
-                                      Stroke="#222"
-                                      Fill="#666" />
-                              </Setter.Value>
-                            </Setter>
-                          </DataTrigger>
-                        </Style.Triggers>
-                      </Style>
-                    </Button.Style>
-                  </Button>
-
-                  <Image Width="16" Height="16"
-                         Source="{Binding Model.CodeType, Converter={StaticResource CodeTypeToImageSource}}" />
-
-                  <TextBlock Margin="3 0"
-                             FontFamily="Consolas" FontSize="9.75pt"
-                             Text="{Binding DisplayName}"
-                             ToolTip="{Binding Model.FullName}" />
-
-                </StackPanel>
-              </Grid>
+                <TextBlock Margin="3 0"
+                           FontFamily="Consolas" FontSize="9.75pt"
+                           Text="{Binding DisplayName}"
+                           TextTrimming="None"
+                           TextWrapping="NoWrap"
+                           ToolTip="{Binding Model.FullName}" />
+              </StackPanel>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>

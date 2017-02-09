@@ -17,9 +17,9 @@ namespace VSCoverageViewer.Interfaces
     internal interface ICoverageGridViewModel : INotifyPropertyChanged
     {
         /// <summary>
-        /// Gets the coverage data as a flattened list.
+        /// Gets a view to the coverage data as a flattened list.
         /// </summary>
-        IReadOnlyList<CoverageNodeViewModel> RowsAsFlatList { get; }
+        ICollectionView RowsAsFlatList { get; }
 
         /// <summary>
         /// Gets or sets the selected coverage row.

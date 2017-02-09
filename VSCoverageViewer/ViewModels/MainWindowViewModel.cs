@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
 using Microsoft.Win32;
@@ -28,9 +29,10 @@ namespace VSCoverageViewer.ViewModels
         // non-bindable:
         private readonly IMessenger _messenger;
         private readonly Dictionary<Column, bool> _columnVisibility = new Dictionary<Column, bool>();
+        private readonly ObservableCollection<CoverageNodeViewModel> _rowsAsFlatList = new ObservableCollection<CoverageNodeViewModel>();
 
         // bindable - outside of constructor, set through property.
-        private IReadOnlyList<CoverageNodeViewModel> _rowsAsFlatList;
+        private ICollectionView _rowsCollectionView;
         private CoverageNodeViewModel _selectedRow;
         private ColumnPreset _columnVisibilityPreset;
         private double _coverageThreshold;
@@ -53,10 +55,29 @@ namespace VSCoverageViewer.ViewModels
         }
 
         /// <inheritdoc />
-        public IReadOnlyList<CoverageNodeViewModel> RowsAsFlatList
+        public ICollectionView RowsAsFlatList
         {
-            get { return _rowsAsFlatList; }
-            private set { Set(ref _rowsAsFlatList, value); }
+            get
+            {
+                if (_rowsCollectionView == null)
+                {
+                    _rowsCollectionView = CollectionViewSource.GetDefaultView(_rowsAsFlatList);
+                    _rowsCollectionView.Filter =
+                        (obj) =>
+                        {
+                            return (obj as CoverageNodeViewModel)?.IsVisible ?? false;
+                        };
+
+                    var liveView = _rowsCollectionView as ICollectionViewLiveShaping;
+                    if (liveView != null)
+                    {
+                        liveView.IsLiveFiltering = true;
+                        liveView.LiveFilteringProperties.Add(nameof(CoverageNodeViewModel.IsVisible));
+                    }
+                }
+
+                return _rowsCollectionView;
+            }
         }
 
         /// <inheritdoc />
@@ -205,7 +226,7 @@ namespace VSCoverageViewer.ViewModels
                     }
                     else
                     {
-                        // user cancelled
+                        // user canceled
                         canceled = true;
                     }
                 }
@@ -322,7 +343,7 @@ namespace VSCoverageViewer.ViewModels
         /// </summary>
         public void ExpandAll()
         {
-            foreach (var row in RowsAsFlatList)
+            foreach (var row in _rowsAsFlatList)
             {
                 row.SetExpandedWithoutNotifyingChildren(isExpanded: true);
             }
@@ -333,7 +354,7 @@ namespace VSCoverageViewer.ViewModels
         /// </summary>
         public void CollapseAll()
         {
-            foreach (var row in RowsAsFlatList)
+            foreach (var row in _rowsAsFlatList)
             {
                 row.SetExpandedWithoutNotifyingChildren(isExpanded: false);
             }
@@ -520,7 +541,12 @@ namespace VSCoverageViewer.ViewModels
                 AppendRows(vm, flatList);
             }
 
-            RowsAsFlatList = flatList;
+            _rowsAsFlatList.Clear();
+            foreach (var row in flatList)
+            {
+                _rowsAsFlatList.Add(row);
+            }
+
             SendThresholdChanged(CoverageThreshold);
         }
 

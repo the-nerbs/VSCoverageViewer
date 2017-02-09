@@ -100,7 +100,7 @@
     <Compile Include="ColumnPresetLists.cs" />
     <Compile Include="Contract.cs" />
     <Compile Include="Converters\EnumDescriptionCoverter.cs" />
-    <Compile Include="Converters\MultiplyConverter.cs" />
+    <Compile Include="Converters\RowIndentConverter.cs" />
     <Compile Include="Converters\CodeTypeToImageConverter.cs" />
     <Compile Include="Converters\PercentageConverter.cs" />
     <Compile Include="CoverageWriter.cs" />
