@@ -58,6 +58,11 @@ namespace VSCoverageViewer.Interfaces
         /// </summary>
         RelayCommand RemoveNodeCmd { get; }
 
+        /// <summary>
+        /// Gets a command which allows the user to select an assembly to read metadata from.
+        /// </summary>
+        RelayCommand ReadMetadataCmd { get; }
+
 
         /// <summary>
         /// Determines the visibility of a column.

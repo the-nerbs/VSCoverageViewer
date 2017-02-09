@@ -17,6 +17,8 @@
       <MenuItem Header="Collapse All" Command="{Binding CollapseAllCmd}" />
       <Separator />
       <MenuItem Header="Remove Node" Command="{Binding RemoveNodeCmd}"/>
+      <Separator />
+      <MenuItem Header="Read Metadata" Command="{Binding ReadMetadataCmd}" />
     </ContextMenu>
 
   </UserControl.Resources>
@@ -75,6 +77,7 @@
                   </ColumnDefinition>
                   <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
+
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
 
                   <Button Width="16" Height="16"

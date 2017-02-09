@@ -92,6 +92,7 @@
     <Compile Include="Messaging\ColumnVisibilityChangedMessage.cs" />
     <Compile Include="Messaging\ThresholdChangedMessage.cs" />
     <Compile Include="AppResourceKeys.cs" />
+    <Compile Include="MetadataHelper.cs" />
     <Compile Include="Serialization\ClassCoverageInfo.cs" />
     <Compile Include="Serialization\CoverageDSPriv.cs" />
     <Compile Include="Serialization\Export\ClassExport.cs" />

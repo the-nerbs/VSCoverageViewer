@@ -12,6 +12,7 @@ using GalaSoft.MvvmLight.Messaging;
 using Microsoft.Win32;
 using VSCoverageViewer.Interfaces;
 using VSCoverageViewer.Messaging;
+using VSCoverageViewer.Models;
 using VSCoverageViewer.Properties;
 
 namespace VSCoverageViewer.ViewModels
@@ -118,6 +119,9 @@ namespace VSCoverageViewer.ViewModels
         /// <inheritdoc />
         public RelayCommand RemoveNodeCmd { get; }
 
+        /// <inheritdoc />
+        public RelayCommand ReadMetadataCmd { get; }
+
 
         /// <summary>
         /// Initializes a new instance of <see cref="MainWindowViewModel"/>.
@@ -155,6 +159,8 @@ namespace VSCoverageViewer.ViewModels
             CollapseAllCmd = new RelayCommand(CollapseAll, HaveRows);
 
             RemoveNodeCmd = new RelayCommand(RemoveSelectedNode, HaveSelectedNode);
+
+            ReadMetadataCmd = new RelayCommand(ReadMetadata, CanReadMetadata);
 
             CoverageRows.CollectionChanged += CoverageRowsCollectionChanged;
         }
@@ -406,6 +412,55 @@ namespace VSCoverageViewer.ViewModels
                     // removing a root, just remove from CoverageRows and let the
                     // CollectionChanged handler deal with updating the list.
                     CoverageRows.Remove(SelectedCoverageRow);
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Command predicate indicating if metadata can be read.
+        /// </summary>
+        /// <returns>True if metadata can be read, false if not.</returns>
+        private bool CanReadMetadata()
+        {
+            // only allow loading metadata if the user selected a node that is, or is under, a module node.
+            return SelectedCoverageRow != null &&
+                   SelectedCoverageRow.Model != null &&
+                   SelectedCoverageRow.Model.ClosestAncestor(CoverageNodeType.Module) != null;
+        }
+
+        /// <summary>
+        /// Reads metadata for a given coverage node.
+        /// </summary>
+        private void ReadMetadata()
+        {
+            CoverageNodeModel node = SelectedCoverageRow?.Model.ClosestAncestor(CoverageNodeType.Module);
+
+            if (node != null)
+            {
+                //TODO (testing): hide this behind a service interface
+                var ofd = new OpenFileDialog
+                {
+                    Filter = ".NET Assembly (*.exe;*.dll)|*.exe;*.dll",
+                    Multiselect = false,
+                    FileName = node.Name,
+                };
+
+                if (ofd.ShowDialog(Owner) == true)
+                {
+                    MetadataHelper helper;
+
+                    try
+                    {
+                        helper = new MetadataHelper(ofd.FileName);
+                    }
+                    catch (BadImageFormatException ex)
+                    {
+                        MessageBox.Show(Owner, "The selected file is not a valid .NET assembly.");
+                        return;
+                    }
+
+                    helper.LoadMetadataFor(node);
                 }
             }
         }

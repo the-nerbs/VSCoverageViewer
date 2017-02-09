@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,6 +27,7 @@ namespace VSCoverageViewer.Models
     /// <summary>
     /// Model for coverage data nodes.
     /// </summary>
+    [DebuggerDisplay("{DebugDisplay,nq}")]
     internal class CoverageNodeModel : ObservableObject
     {
         private string _name;
@@ -60,7 +64,7 @@ namespace VSCoverageViewer.Models
         }
 
         /// <summary>
-        /// Gets the full name of this coverage data.
+        /// Gets the full name of this coverage data, including the module name.
         /// </summary>
         [DependentOn(nameof(Name))]
         public string FullName
@@ -70,13 +74,18 @@ namespace VSCoverageViewer.Models
                 if (Parent != null &&
                     Parent.NodeType != CoverageNodeType.CoverageFile)
                 {
-                    return Parent.FullName + "." + Name;
+                    if (Parent.NodeType != CoverageNodeType.Module)
+                    {
+                        return Parent.FullName + "." + Name;
+                    }
+
+                    // use the IL DASM notation for module-qualified names
+                    return "[" + Parent.FullName + "]" + Name;
                 }
 
                 return Name;
             }
         }
-
 
 
         /// <summary>
@@ -208,8 +217,23 @@ namespace VSCoverageViewer.Models
         /// <summary>
         /// Contains any additional data present in the coverage node.
         /// </summary>
+        [Bindable(false)]
         public IDictionary<string, object> AdditionalData { get; }
 
+        /// <summary>
+        /// Indicates if .NET metadata for this node has been read or not.
+        /// </summary>
+        [Bindable(false)]
+        public bool HasReadMetadata { get; internal set; }
+
+
+        /// <summary>
+        /// Code for debugger display.
+        /// </summary>
+        private string DebugDisplay
+        {
+            get { return $"{Name} : {NodeType}"; }
+        }
 
 
         /// <summary>
@@ -220,8 +244,10 @@ namespace VSCoverageViewer.Models
         {
             NodeType = type;
 
-            Children = new ObservableCollection<CoverageNodeModel>();
             AdditionalData = new Dictionary<string, object>();
+
+            Children = new ObservableCollection<CoverageNodeModel>();
+            Children.CollectionChanged += ChildrenCollectionChanged;
         }
 
 
@@ -242,6 +268,67 @@ namespace VSCoverageViewer.Models
             }
         }
 
+        /// <summary>
+        /// Gets the closest ancestor of the given node type.
+        /// </summary>
+        /// <param name="type">The node type to search for.</param>
+        /// <returns>
+        /// The coverage node of the given type. If one is not found, <c>null</c> is returned.  If
+        /// this node is of the given type, then this node will be returned.
+        /// </returns>
+        public CoverageNodeModel ClosestAncestor(CoverageNodeType type)
+        {
+            var node = this;
+
+            while (node != null &&
+                   node.NodeType != type)
+            {
+                node = node.Parent;
+            }
+
+            return node;
+        }
+
+
+        /// <summary>
+        /// Handles the child collection changing.
+        /// </summary>
+        /// <param name="sender">Unused.</param>
+        /// <param name="e">The event details.</param>
+        private void ChildrenCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    foreach (CoverageNodeModel node in e.NewItems)
+                    {
+                        node.Parent = this;
+                    }
+                    break;
+
+                case NotifyCollectionChangedAction.Remove:
+                    foreach (CoverageNodeModel node in e.OldItems)
+                    {
+                        node.Parent = null;
+                    }
+                    break;
+
+                case NotifyCollectionChangedAction.Replace:
+                    foreach (CoverageNodeModel node in e.OldItems)
+                    {
+                        node.Parent = null;
+                    }
+
+                    foreach (CoverageNodeModel node in e.NewItems)
+                    {
+                        node.Parent = this;
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        }
 
         /// <summary>
         /// Computes a percentage from the value and total amounts.

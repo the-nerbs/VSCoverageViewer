@@ -33,7 +33,7 @@ namespace VSCoverageViewer
         {
             if (value == null)
             {
-                throw new ArgumentNullException(nameof(paramName));
+                throw new ArgumentNullException(paramName);
             }
         }
 
@@ -50,7 +50,7 @@ namespace VSCoverageViewer
         {
             if (value == null)
             {
-                throw new ArgumentNullException(nameof(paramName));
+                throw new ArgumentNullException(paramName);
             }
         }
 
