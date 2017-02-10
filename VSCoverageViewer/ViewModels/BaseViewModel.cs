@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -60,6 +61,8 @@ namespace VSCoverageViewer.ViewModels
         /// Initializes a new instance of <see cref="BaseViewModel{TModel}"/> with a model.
         /// </summary>
         /// <param name="model">The model to initialize with.</param>
+        [SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors",
+                         Justification = "Virtual call expected and desired to model-attach logic.")]
         protected BaseViewModel(TModel model)
         {
             Messenger = GalaSoft.MvvmLight.Messaging.Messenger.Default;

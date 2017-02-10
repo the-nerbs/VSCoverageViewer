@@ -150,9 +150,6 @@ namespace VSCoverageViewer
             string className = GetCleanTypeName(type);
             classNode.Name = className;
 
-            var methods = new List<CoverageNodeModel>(classNode.Children.Where(ch => ch.NodeType == CoverageNodeType.Function));
-
-
             foreach (var ctor in type.GetConstructors(LoadFlags))
             {
                 // ".cctor", ".ctor" - see: ECMA-335, II.10.5 Special Members

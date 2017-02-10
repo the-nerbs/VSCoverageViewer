@@ -475,7 +475,7 @@ namespace VSCoverageViewer.ViewModels
                     {
                         helper = new MetadataHelper(ofd.FileName);
                     }
-                    catch (BadImageFormatException ex)
+                    catch (BadImageFormatException)
                     {
                         MessageBox.Show(Owner, "The selected file is not a valid .NET assembly.");
                         return;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -42,7 +43,7 @@ namespace VSCoverageViewer
         /// </code>
         /// </example>
         [ExcludeFromCodeCoverage]   // should _never_ be hit.
-        internal static Exception UnreachableCode(string message)
+        internal static Exception UnreachableCode([Localizable(false)] string message)
         {
             Debug.Fail(message);
             return new InternalFailureException(message);

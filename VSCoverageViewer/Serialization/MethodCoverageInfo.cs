@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,8 @@ namespace VSCoverageViewer.Serialization
         public int BlocksNotCovered { get; set; }
 
         [XmlElement("Lines")]
+        [SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays",
+                         Justification = "Serialization type.")]
         public LineCoverageInfo[] Lines { get; set; }
 
 

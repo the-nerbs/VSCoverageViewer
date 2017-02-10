@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +24,8 @@ namespace VSCoverageViewer.Serialization
 
 
         [XmlElement("Method")]
+        [SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays",
+                         Justification = "Serialization type.")]
         public MethodCoverageInfo[] Methods { get; set; }
 
 
