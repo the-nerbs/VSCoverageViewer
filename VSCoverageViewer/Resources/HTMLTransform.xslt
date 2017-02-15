@@ -97,7 +97,7 @@
             padding-left: 10px;
             padding-right: 10px;
           }
-          .th {
+          th {
             background: #e0e0e0;
             text-align: center;
           }
@@ -211,14 +211,27 @@
           function evaluateVisibility() {
             var $rows = $('#coverage-table tbody tr');
 
+            // workaround Chromium bug 174167
+            // details: https://bugs.chromium.org/p/chromium/issues/detail?id=174167
+            var chrome = window.chrome;
+            var isChromium = (chrome !== null &amp;&amp; chrome !== undefined);
+
             $rows.each(function(i, el) {
               var $node = $(el);
 
               var $parentNode = parentOf($node);
               if (isNodeCollapsed($parentNode)) {
-                $node.css('visibility', 'collapse');
+                if (isChromium) {
+                  $node.hide();
+                } else {
+                  $node.css('visibility', 'collapse');
+                }
               } else {
-                $node.css('visibility', '');
+                if (isChromium) {
+                  $node.show();
+                } else {
+                  $node.css('visibility', '');
+                }
               }
             });
           }

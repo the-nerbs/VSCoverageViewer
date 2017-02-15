@@ -84,7 +84,14 @@ namespace VSCoverageViewer
         {
             var model = new CoverageNodeModel(CoverageNodeType.Namespace);
 
-            model.Name = ns.NamespaceName;
+            if (!string.IsNullOrEmpty(ns.NamespaceName))
+            {
+                model.Name = ns.NamespaceName;
+            }
+            else
+            {
+                model.Name = "Global Types";
+            }
 
             model.BlocksCovered         = ns.BlocksCovered;
             model.BlocksNotCovered      = ns.BlocksNotCovered;
@@ -108,7 +115,14 @@ namespace VSCoverageViewer
         {
             var model = new CoverageNodeModel(CoverageNodeType.Type);
 
-            model.Name = cls.ClassName;
+            if (!string.IsNullOrEmpty(cls.ClassName))
+            {
+                model.Name = cls.ClassName;
+            }
+            else
+            {
+                model.Name = "Global Functions";
+            }
 
             model.LinesCovered          = cls.LinesCovered;
             model.LinesPartiallyCovered = cls.LinesPartiallyCovered;

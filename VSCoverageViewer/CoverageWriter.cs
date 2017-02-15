@@ -46,7 +46,6 @@ namespace VSCoverageViewer
             //
             //  1) Because XmlSerializer cannot write out a schema like the CoverageDSPriv files have
             //     the coverage XML is first written to a temp buffer.
-            //TODO: temp buffer should probably be a temp file to support large coverage data sets. 
             //
             //  2) Had to add the Namespaces\NamespacesInternal properties to CoverageDSPriv to
             //     make XmlSerializer _not_ write out the xsi and xsd namespaces.
@@ -64,21 +63,25 @@ namespace VSCoverageViewer
 
             CoverageDSPriv merged = ConcatenateFiles(models.Select(CreateSerializable));
 
-            var builder = new StringBuilder();
-            using (var writer = XmlWriter.Create(builder, settings))
+            using (var tempFile = new TempFile())
             {
-                ser.Serialize(writer, merged, CoverageDSPriv.NamespacesInternal);
-            }
+                using (var writer = XmlWriter.Create(tempFile.Stream, settings))
+                {
+                    ser.Serialize(writer, merged, CoverageDSPriv.NamespacesInternal);
+                }
 
-            var itemDoc = new XmlDocument();
-            itemDoc.LoadXml(builder.ToString());
-            itemDoc.DocumentElement.PrependChild(
-                itemDoc.ImportNode(_schemaDoc.DocumentElement, true)
-            );
+                tempFile.ResetPosition();
 
-            using (var writer = XmlWriter.Create(path, settings))
-            {
-                itemDoc.Save(writer);
+                var itemDoc = new XmlDocument();
+                itemDoc.Load(tempFile.Stream);
+                itemDoc.DocumentElement.PrependChild(
+                    itemDoc.ImportNode(_schemaDoc.DocumentElement, true)
+                );
+
+                using (var writer = XmlWriter.Create(path, settings))
+                {
+                    itemDoc.Save(writer);
+                }
             }
         }
 
@@ -235,6 +238,68 @@ namespace VSCoverageViewer
             meth.Lines = (LineCoverageInfo[])model.AdditionalData[nameof(meth.Lines)];
 
             return meth;
+        }
+
+
+        /// <summary>
+        /// A simple disposable wrapper around a temporary file.
+        /// </summary>
+        private class TempFile : IDisposable
+        {
+            private readonly string _path;
+            private readonly Stream _stream;
+            private bool _isDisposed = false;
+
+
+            /// <summary>
+            /// Gets a read/write stream to the temp file.
+            /// </summary>
+            public Stream Stream
+            {
+                get { return _stream; }
+            }
+
+
+            /// <summary>
+            /// Creates a new temporary file.
+            /// </summary>
+            public TempFile()
+            {
+                _path = Path.GetTempFileName();
+                _stream = new FileStream(_path, FileMode.Create, FileAccess.ReadWrite);
+            }
+
+
+            /// <summary>
+            /// Resets the stream back to the beginning of the file.
+            /// </summary>
+            public void ResetPosition()
+            {
+                Debug.Assert(!_isDisposed);
+                Stream.Seek(0, SeekOrigin.Begin);
+            }
+
+            /// <summary>
+            /// Disposes the stream and attempts to delete the temp file.
+            /// </summary>
+            public void Dispose()
+            {
+                if (!_isDisposed && _stream != null)
+                {
+                    _stream.Dispose();
+
+                    try
+                    {
+                        File.Delete(_path);
+                    }
+                    catch
+                    {
+                        // ignore - there's nothing that can really be done here.
+                    }
+
+                    _isDisposed = true;
+                }
+            }
         }
     }
 }
