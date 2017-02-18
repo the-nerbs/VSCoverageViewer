@@ -17,7 +17,7 @@ namespace VSCoverageViewer.Models
         Members = 5,
     }
 
-    internal enum ExportFormat
+    internal enum ReportFormat
     {
         [Description("HTML single file (requires internet connection)")]
         HtmlSingleFile,
@@ -35,7 +35,7 @@ namespace VSCoverageViewer.Models
         private string _destinationPath;
         private string _projectName;
         private ViewLevel _defaultExpansion = ViewLevel.Classes;
-        private ExportFormat _exportType = ExportFormat.HtmlSingleFile;
+        private ReportFormat _reportType = ReportFormat.HtmlSingleFile;
         private bool _openWhenDone = true;
 
 
@@ -69,10 +69,10 @@ namespace VSCoverageViewer.Models
         /// <summary>
         /// Gets or sets the type of report to create.
         /// </summary>
-        public ExportFormat ReportFormat
+        public ReportFormat ReportFormat
         {
-            get { return _exportType; }
-            set { SetIfChanged(ref _exportType, value); }
+            get { return _reportType; }
+            set { SetIfChanged(ref _reportType, value); }
         }
 
         /// <summary>

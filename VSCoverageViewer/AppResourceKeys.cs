@@ -13,7 +13,7 @@ namespace VSCoverageViewer
     {
         public const string OpenFileImg = nameof(OpenFileImg);
         public const string SaveFileImg = nameof(SaveFileImg);
-        public const string ExportSummaryImg = nameof(ExportSummaryImg);
+        public const string CreateReportImg = nameof(CreateReportImg);
 
         public const string FilterImg = nameof(FilterImg);
 

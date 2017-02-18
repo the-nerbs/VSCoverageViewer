@@ -39,9 +39,9 @@ namespace VSCoverageViewer.Interfaces
         RelayCommand<string> SaveCmd { get; }
 
         /// <summary>
-        /// Gets a command which exports a coverage report.
+        /// Gets a command which creates a report of coverage report.
         /// </summary>
-        RelayCommand ExportCmd { get; }
+        RelayCommand ReportCmd { get; }
 
         /// <summary>
         /// Gets a command which shows the column display properties dialog.

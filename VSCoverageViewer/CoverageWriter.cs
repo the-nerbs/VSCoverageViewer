@@ -13,6 +13,7 @@ using System.Xml.Serialization;
 using System.Xml.Xsl;
 using VSCoverageViewer.Models;
 using VSCoverageViewer.Properties;
+using VSCoverageViewer.Report;
 using VSCoverageViewer.Serialization;
 using VSCoverageViewer.Serialization.Export;
 
@@ -91,78 +92,39 @@ namespace VSCoverageViewer
             }
         }
 
-
         /// <summary>
-        /// Writes a coverage summary in HTML format.
+        /// Writes a coverage report in the configured format.
         /// </summary>
         /// <param name="models">The models to include in the coverage file.</param>
         /// <param name="configuration">The report configuration,</param>
-        public void WriteHtmlReport(IEnumerable<CoverageNodeModel> models, ReportConfigurationModel configuration)
+        public void WriteReport(IEnumerable<CoverageNodeModel> models, ReportConfigurationModel configuration)
         {
+            Contract.RequiresNotNull(models, nameof(models));
+            Contract.Requires(models.Any(), "No coverage data to create a report for.", nameof(models));
             Contract.RequiresNotNull(configuration, nameof(configuration));
 
-            CoverageDSPriv merged = ConcatenateFiles(models.Select(CreateSerializable));
-            var exportModel = new CoverageExport(configuration.ProjectName, merged);
-
-            var ser = new XmlSerializer(typeof(CoverageExport));
-
-            string tempFilePath = Path.GetTempFileName();
-            using (var tempFile = new FileStream(tempFilePath, FileMode.Create, FileAccess.ReadWrite))
-            {
-                ser.Serialize(tempFile, exportModel);
-            }
-
-
-            var transform = new XslCompiledTransform();
-            using (var xslReader = XmlReader.Create(new StringReader(Resources.HTMLTransform)))
-            {
-                transform.Load(xslReader);
-            }
-
-
-            var args = new XsltArgumentList();
-            args.AddParam("genDate", "", DateTime.Now.ToString("dd MMM yyyy HH:mm:ss"));
-            args.AddParam("totalLines", "", exportModel.LinesCovered + exportModel.LinesPartiallyCovered + exportModel.LinesNotCovered);
-            args.AddParam("totalBlocks", "", exportModel.BlocksCovered + exportModel.BlocksNotCovered);
-
-            args.AddParam("depth", "", (int)configuration.DefaultExpansion);
+            ReportWriter writer;
 
             switch (configuration.ReportFormat)
             {
-                case ExportFormat.HtmlSingleFile:
-                    args.AddParam("jQuerySource", "", JQueryCDNLocation);
+                case ReportFormat.HtmlSingleFile:
+                    writer = new HtmlSingleFileReportWriter();
                     break;
 
-                case ExportFormat.HtmlMultiFile:
-                    {
-                        // Note (Windows-specific):
-                        // when a web page ("Page.html") is accompanied by a folder named like "Page_files", 
-                        // windows will try to keep the folder with the html page.
-                        string filesDirName = Path.GetFileNameWithoutExtension(configuration.DestinationPath) + "_files";
-                        string filesDirPath = Path.Combine(Path.GetDirectoryName(configuration.DestinationPath), filesDirName);
-
-                        Directory.CreateDirectory(filesDirPath);
-
-                        string jqueryPath = Path.Combine(filesDirName, JQueryFileName);
-                        args.AddParam("jQuerySource", "", jqueryPath);
-
-                        using (var webClient = new WebClient())
-                        {
-                            webClient.CachePolicy = new RequestCachePolicy(RequestCacheLevel.CacheIfAvailable);
-                            webClient.DownloadFile(JQueryCDNLocation, jqueryPath);
-                        }
-                    }
+                case ReportFormat.HtmlMultiFile:
+                    writer = new HtmlMultiFileReportWriter();
                     break;
 
                 default:
-                    throw Utility.UnreachableCode("Unexpected export type.");
+                    throw Utility.UnreachableCode("Unexpected report type.");
             }
 
-            using (var outputFile = new FileStream(configuration.DestinationPath, FileMode.Create, FileAccess.Write))
-            {
-                transform.Transform(tempFilePath, args, outputFile);
-            }
+            CoverageDSPriv merged = ConcatenateFiles(models.Select(CreateSerializable));
+            var reportModel = new CoverageExport(configuration.ProjectName, merged);
+
+            writer.WriteReport(reportModel, configuration);
         }
+
 
         private static CoverageDSPriv ConcatenateFiles(IEnumerable<CoverageDSPriv> files)
         {
@@ -280,68 +242,6 @@ namespace VSCoverageViewer
             meth.Lines = (LineCoverageInfo[])model.AdditionalData[nameof(meth.Lines)];
 
             return meth;
-        }
-
-
-        /// <summary>
-        /// A simple disposable wrapper around a temporary file.
-        /// </summary>
-        private class TempFile : IDisposable
-        {
-            private readonly string _path;
-            private readonly Stream _stream;
-            private bool _isDisposed = false;
-
-
-            /// <summary>
-            /// Gets a read/write stream to the temp file.
-            /// </summary>
-            public Stream Stream
-            {
-                get { return _stream; }
-            }
-
-
-            /// <summary>
-            /// Creates a new temporary file.
-            /// </summary>
-            public TempFile()
-            {
-                _path = Path.GetTempFileName();
-                _stream = new FileStream(_path, FileMode.Create, FileAccess.ReadWrite);
-            }
-
-
-            /// <summary>
-            /// Resets the stream back to the beginning of the file.
-            /// </summary>
-            public void ResetPosition()
-            {
-                Debug.Assert(!_isDisposed);
-                Stream.Seek(0, SeekOrigin.Begin);
-            }
-
-            /// <summary>
-            /// Disposes the stream and attempts to delete the temp file.
-            /// </summary>
-            public void Dispose()
-            {
-                if (!_isDisposed && _stream != null)
-                {
-                    _stream.Dispose();
-
-                    try
-                    {
-                        File.Delete(_path);
-                    }
-                    catch
-                    {
-                        // ignore - there's nothing that can really be done here.
-                    }
-
-                    _isDisposed = true;
-                }
-            }
         }
     }
 }

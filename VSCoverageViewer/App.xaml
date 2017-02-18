@@ -20,11 +20,11 @@
     <!-- Action Icons -->
     <BitmapImage x:Key="{x:Static local:AppResourceKeys.OpenFileImg}"
                  UriSource="Resources/openHS.png" />
-    
+
     <BitmapImage x:Key="{x:Static local:AppResourceKeys.SaveFileImg}"
                  UriSource="Resources/save.png" />
-    
-    <BitmapImage x:Key="{x:Static local:AppResourceKeys.ExportSummaryImg}"
+
+    <BitmapImage x:Key="{x:Static local:AppResourceKeys.CreateReportImg}"
                  UriSource="Resources/export.png" />
 
     <BitmapImage x:Key="{x:Static local:AppResourceKeys.FilterImg}"

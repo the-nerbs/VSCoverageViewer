@@ -116,7 +116,7 @@ namespace VSCoverageViewer.ViewModels
         public RelayCommand<string> SaveCmd { get; }
 
         /// <inheritdoc />
-        public RelayCommand ExportCmd { get; }
+        public RelayCommand ReportCmd { get; }
 
         /// <inheritdoc />
         public RelayCommand ExitCmd { get; }
@@ -173,7 +173,7 @@ namespace VSCoverageViewer.ViewModels
             // commands
             OpenCmd = new RelayCommand<string>(OpenFile);
             SaveCmd = new RelayCommand<string>(SaveFile, (param) => HaveRows());
-            ExportCmd = new RelayCommand(ExportCoverageSummary, HaveRows);
+            ReportCmd = new RelayCommand(CreateCoverageReport, HaveRows);
             ExitCmd = new RelayCommand(Exit);
 
             ExpandTreeCmd = new RelayCommand(ExpandSelectedTree, HaveSelectedNode);
@@ -287,9 +287,9 @@ namespace VSCoverageViewer.ViewModels
         }
 
         /// <summary>
-        /// Exports a summary of the open coverage data, in HTML format.
+        /// Creates a report of the open coverage data.
         /// </summary>
-        public void ExportCoverageSummary()
+        public void CreateCoverageReport()
         {
             var config = new ReportConfigurationModel();
 
@@ -303,7 +303,7 @@ namespace VSCoverageViewer.ViewModels
             if (configDlg.ShowDialog() == true)
             {
                 var writer = new CoverageWriter();
-                writer.WriteHtmlReport(CoverageRows.Select(vm => vm.Model), config);
+                writer.WriteReport(CoverageRows.Select(vm => vm.Model), config);
 
 
                 if (config.OpenWhenDone)

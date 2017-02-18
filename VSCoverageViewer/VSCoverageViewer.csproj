@@ -102,6 +102,7 @@
     <Compile Include="Column.cs" />
     <Compile Include="ColumnPreset.cs" />
     <Compile Include="ColumnPresetLists.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Contract.cs" />
     <Compile Include="Converters\EnumDescriptionCoverter.cs" />
     <Compile Include="Converters\RowIndentConverter.cs" />
@@ -118,6 +119,11 @@
     <Compile Include="AppResourceKeys.cs" />
     <Compile Include="MetadataHelper.cs" />
     <Compile Include="Models\ReportConfigurationModel.cs" />
+    <Compile Include="Report\HtmlMultiFileReportWriter.cs" />
+    <Compile Include="Report\HtmlSingleFileReportWriter.cs" />
+    <Compile Include="Report\ReportConstants.cs" />
+    <Compile Include="Report\ReportWriter.cs" />
+    <Compile Include="Report\TempFile.cs" />
     <Compile Include="Serialization\ClassCoverageInfo.cs" />
     <Compile Include="Serialization\CoverageDSPriv.cs" />
     <Compile Include="Serialization\Export\ClassExport.cs" />
@@ -232,6 +238,7 @@
     <Resource Include="Resources\Save.png" />
     <Resource Include="Resources\Export.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

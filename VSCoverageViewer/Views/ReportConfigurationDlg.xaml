@@ -92,7 +92,7 @@
                Text="Format" />
 
     <ComboBox Grid.Row="3" Grid.Column="2"
-              ItemsSource="{local:EnumSource {x:Type m:ExportFormat}}"
+              ItemsSource="{local:EnumSource {x:Type m:ReportFormat}}"
               DisplayMemberPath="Display"
               SelectedValuePath="Value"
               SelectedValue="{Binding Model.ReportFormat}" />

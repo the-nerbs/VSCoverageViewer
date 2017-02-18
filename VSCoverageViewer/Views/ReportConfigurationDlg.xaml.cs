@@ -21,7 +21,7 @@ using VSCoverageViewer.ViewModels;
 namespace VSCoverageViewer.Views
 {
     /// <summary>
-    /// Interaction logic for ExportSettingsDlg.xaml
+    /// Interaction logic for ReportConfigurationDlg.xaml
     /// </summary>
     public partial class ReportConfigurationDlg : Window
     {

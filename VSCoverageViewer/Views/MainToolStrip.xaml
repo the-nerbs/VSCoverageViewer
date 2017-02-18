@@ -44,11 +44,11 @@
       </Button>
 
       <Button Style="{StaticResource buttonStyle}"
-              Command="{Binding ExportCmd}"
-              ToolTip="Export Summary">
+              Command="{Binding ReportCmd}"
+              ToolTip="Create Report...">
 
         <Border BorderThickness="1">
-          <Image Source="{StaticResource {x:Static local:AppResourceKeys.ExportSummaryImg}}"
+          <Image Source="{StaticResource {x:Static local:AppResourceKeys.CreateReportImg}}"
                  Stretch="Uniform"/>
         </Border>
 
