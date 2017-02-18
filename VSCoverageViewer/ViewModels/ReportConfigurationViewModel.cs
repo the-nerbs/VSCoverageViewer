@@ -9,6 +9,7 @@ using System.Windows;
 using GalaSoft.MvvmLight.CommandWpf;
 using Microsoft.Win32;
 using VSCoverageViewer.Models;
+using VSCoverageViewer.Properties;
 
 namespace VSCoverageViewer.ViewModels
 {
@@ -66,6 +67,7 @@ namespace VSCoverageViewer.ViewModels
         /// </summary>
         public void BrowseForDestination()
         {
+            //TODO (testing): hide this behind a service interface
             var sfd = new SaveFileDialog();
             sfd.Filter = "Coverage Report File (*.html;*.htm)|*.html;*.htm";
 
@@ -74,11 +76,19 @@ namespace VSCoverageViewer.ViewModels
                 sfd.InitialDirectory = Path.GetDirectoryName(Model.DestinationPath);
                 sfd.FileName = Path.GetFileName(Model.DestinationPath);
             }
+            else if (!string.IsNullOrEmpty(Settings.Default.ReportDirectory))
+            {
+                sfd.InitialDirectory = Settings.Default.ReportDirectory;
+            }
 
             // note: nullable bools...
             if (sfd.ShowDialog(Owner) == true)
             {
-                Model.DestinationPath = sfd.FileName;
+                string path = sfd.FileName;
+                Model.DestinationPath = path;
+
+                Settings.Default.ReportDirectory = Path.GetDirectoryName(path);
+                Settings.Default.Save();
             }
         }
 

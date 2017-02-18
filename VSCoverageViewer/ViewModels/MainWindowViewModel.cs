@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -218,6 +219,11 @@ namespace VSCoverageViewer.ViewModels
                     Multiselect = false,
                 };
 
+                if (!string.IsNullOrEmpty(Settings.Default.CoverageXmlDirectory))
+                {
+                    ofd.InitialDirectory = Settings.Default.CoverageXmlDirectory;
+                }
+
                 try
                 {
                     ofd.FileOk += CheckFileOpenOK;
@@ -225,6 +231,9 @@ namespace VSCoverageViewer.ViewModels
                     if (ofd.ShowDialog(Owner) == true)
                     {
                         path = ofd.FileName;
+
+                        Settings.Default.CoverageXmlDirectory = Path.GetDirectoryName(path);
+                        Settings.Default.Save();
                     }
                     else
                     {
@@ -263,14 +272,22 @@ namespace VSCoverageViewer.ViewModels
             if (string.IsNullOrEmpty(path))
             {
                 //TODO (testing): hide this behind a service interface
-                var ofd = new SaveFileDialog
+                var sfd = new SaveFileDialog
                 {
                     Filter = "Coverage XML File (*.coveragexml)|*.coveragexml",
                 };
 
-                if (ofd.ShowDialog(Owner) == true)
+                if (!string.IsNullOrEmpty(Settings.Default.CoverageXmlDirectory))
                 {
-                    path = ofd.FileName;
+                    sfd.InitialDirectory = Settings.Default.CoverageXmlDirectory;
+                }
+
+                if (sfd.ShowDialog(Owner) == true)
+                {
+                    path = sfd.FileName;
+
+                    Settings.Default.CoverageXmlDirectory = Path.GetDirectoryName(path);
+                    Settings.Default.Save();
                 }
                 else
                 {

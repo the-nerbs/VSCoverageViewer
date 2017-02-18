@@ -34,5 +34,29 @@ namespace VSCoverageViewer.Properties {
                 this["ThresholdCoverageRatio"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string CoverageXmlDirectory {
+            get {
+                return ((string)(this["CoverageXmlDirectory"]));
+            }
+            set {
+                this["CoverageXmlDirectory"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ReportDirectory {
+            get {
+                return ((string)(this["ReportDirectory"]));
+            }
+            set {
+                this["ReportDirectory"] = value;
+            }
+        }
     }
 }
