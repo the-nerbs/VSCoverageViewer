@@ -117,6 +117,7 @@
     <Compile Include="Messaging\ThresholdChangedMessage.cs" />
     <Compile Include="AppResourceKeys.cs" />
     <Compile Include="MetadataHelper.cs" />
+    <Compile Include="Models\ReportConfigurationModel.cs" />
     <Compile Include="Serialization\ClassCoverageInfo.cs" />
     <Compile Include="Serialization\CoverageDSPriv.cs" />
     <Compile Include="Serialization\Export\ClassExport.cs" />
@@ -133,10 +134,14 @@
     <Compile Include="ViewModelCollection.cs" />
     <Compile Include="ViewModels\CoverageNodeViewModel.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
+    <Compile Include="ViewModels\ReportConfigurationViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Views\ColumnType.cs" />
     <Compile Include="Views\CoverageGrid.xaml.cs">
       <DependentUpon>CoverageGrid.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ReportConfigurationDlg.xaml.cs">
+      <DependentUpon>ReportConfigurationDlg.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MainMenuStrip.xaml.cs">
       <DependentUpon>MainMenuStrip.xaml</DependentUpon>
@@ -159,6 +164,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Views\CoverageGrid.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ReportConfigurationDlg.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -223,7 +232,6 @@
     <Resource Include="Resources\Save.png" />
     <Resource Include="Resources\Export.png" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

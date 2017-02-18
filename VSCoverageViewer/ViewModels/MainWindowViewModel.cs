@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ using VSCoverageViewer.Interfaces;
 using VSCoverageViewer.Messaging;
 using VSCoverageViewer.Models;
 using VSCoverageViewer.Properties;
+using VSCoverageViewer.Views;
 
 namespace VSCoverageViewer.ViewModels
 {
@@ -170,8 +172,8 @@ namespace VSCoverageViewer.ViewModels
 
             // commands
             OpenCmd = new RelayCommand<string>(OpenFile);
-            SaveCmd = new RelayCommand<string>(SaveFile);
-            ExportCmd = new RelayCommand(ExportCoverageSummary);
+            SaveCmd = new RelayCommand<string>(SaveFile, (param) => HaveRows());
+            ExportCmd = new RelayCommand(ExportCoverageSummary, HaveRows);
             ExitCmd = new RelayCommand(Exit);
 
             ExpandTreeCmd = new RelayCommand(ExpandSelectedTree, HaveSelectedNode);
@@ -289,15 +291,31 @@ namespace VSCoverageViewer.ViewModels
         /// </summary>
         public void ExportCoverageSummary()
         {
-            var sfd = new SaveFileDialog();
-            sfd.Filter = "Coverage Export (*.html)|*.html";
-            sfd.OverwritePrompt = true;
+            var config = new ReportConfigurationModel();
 
-            if (sfd.ShowDialog(Owner) == true)
+            // set some defaults.
+            config.ProjectName = CoverageRows.FirstOrDefault()?.DisplayName;
+
+            var configDlg = new ReportConfigurationDlg(config);
+            configDlg.Owner = Owner;
+
+            // note: nullable bools...
+            if (configDlg.ShowDialog() == true)
             {
-                //TODO(export): project name?
                 var writer = new CoverageWriter();
-                writer.WriteHtmlSummary(CoverageRows.Select(vm => vm.Model), "TESTING", sfd.FileName);
+                writer.WriteHtmlReport(CoverageRows.Select(vm => vm.Model), config);
+
+
+                if (config.OpenWhenDone)
+                {
+                    Process.Start(
+                        new ProcessStartInfo
+                        {
+                            FileName = config.DestinationPath,
+                            UseShellExecute = true,
+                        }
+                    );
+                }
             }
         }
 

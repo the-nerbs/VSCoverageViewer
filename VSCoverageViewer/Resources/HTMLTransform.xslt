@@ -5,6 +5,7 @@
                 exclude-result-prefixes="msxsl">
 
   <xsl:output method="html" indent="yes" />
+  <xsl:param name="jQuerySource" />
   <xsl:param name="depth" select="3" />
   <xsl:param name="genDate" />
   <xsl:param name="totalLines" />
@@ -15,8 +16,8 @@
     <xsl:text disable-output-escaping="yes">&lt;!-- saved from url=(0016)http://localhost --&gt;</xsl:text>
     <html>
       <head>
-        <title><xsl:value-of select="CovProj/Name" /> Coverage Summary</title>
-        <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" />
+        <title><xsl:value-of select="CovProj/Name" /> Coverage Report</title>
+        <script src="{$jQuerySource}" />
         <style>
           table thead {
             background-color: #eee;
@@ -172,7 +173,8 @@
           }
 
           td.expand-button {
-            padding:0px;
+            padding: 0px;
+            width: 20px;
           }
 
           .control-panel {
@@ -237,8 +239,6 @@
           }
 
           function toggle(nodeId) {
-            console.log('Clicked ' + nodeId);
-
             var $node = $(nodeId);
 
             $node.toggleClass('collapsed');
@@ -367,9 +367,10 @@
   <xsl:template match="CovProj">
     <xsl:variable name="hasChildren" select="count(./Modules/*) > 0" />
     <tr id="{generate-id()}" data-level="1">
-      <xsl:if test="$hasChildren">
-        <xsl:attribute name="class">can-expand expanded</xsl:attribute>
-      </xsl:if>
+      <xsl:attribute name="class">
+        <xsl:if test="$hasChildren">can-expand</xsl:if>
+        <xsl:if test="$hasChildren and not($depth &gt; 1)"> collapsed</xsl:if>
+      </xsl:attribute>
       <td class="expand-button">
         <xsl:if test="$hasChildren">
           <span class="icon" onclick="toggle('#{generate-id()}')" />
@@ -393,9 +394,10 @@
   <xsl:template match="ModuleExport">
     <xsl:variable name="hasChildren" select="count(./Namespaces/*) > 0" />
     <tr id="{generate-id()}" data-level="2">
-      <xsl:if test="$hasChildren">
-        <xsl:attribute name="class">can-expand expanded</xsl:attribute>
-      </xsl:if>
+      <xsl:attribute name="class">
+        <xsl:if test="$hasChildren">can-expand</xsl:if>
+        <xsl:if test="$hasChildren and not($depth &gt; 2)"> collapsed</xsl:if>
+      </xsl:attribute>
       <td class="expand-button">
         <xsl:if test="$hasChildren">
           <span class="icon" onclick="toggle('#{generate-id()}')" />
@@ -410,20 +412,19 @@
       <xsl:call-template name="CPUData" />
     </tr>
 
-    <xsl:if test="$depth > 0">
-      <xsl:for-each select="Namespaces">
-        <xsl:apply-templates />
-      </xsl:for-each>
-    </xsl:if>
+    <xsl:for-each select="Namespaces">
+      <xsl:apply-templates />
+    </xsl:for-each>
   </xsl:template>
 
 
   <xsl:template match="NamespaceExport">
     <xsl:variable name="hasChildren" select="count(./Classes/*) > 0" />
     <tr id="{generate-id()}" data-level="3">
-      <xsl:if test="$hasChildren">
-        <xsl:attribute name="class">can-expand expanded</xsl:attribute>
-      </xsl:if>
+      <xsl:attribute name="class">
+        <xsl:if test="$hasChildren">can-expand</xsl:if>
+        <xsl:if test="$hasChildren and not($depth &gt; 3)"> collapsed</xsl:if>
+      </xsl:attribute>
       <td class="expand-button">
         <xsl:if test="$hasChildren">
           <span class="icon" onclick="toggle('#{generate-id()}')" />
@@ -438,20 +439,19 @@
       <xsl:call-template name="CPUData" />
     </tr>
 
-    <xsl:if test="$depth > 1">
-      <xsl:for-each select="Classes">
-        <xsl:apply-templates />
-      </xsl:for-each>
-    </xsl:if>
+    <xsl:for-each select="Classes">
+      <xsl:apply-templates />
+    </xsl:for-each>
   </xsl:template>
 
 
   <xsl:template match="ClassExport">
     <xsl:variable name="hasChildren" select="count(./Methods/*) > 0" />
     <tr id="{generate-id()}" data-level="4">
-      <xsl:if test="$hasChildren">
-        <xsl:attribute name="class">can-expand collapsed</xsl:attribute>
-      </xsl:if>
+      <xsl:attribute name="class">
+        <xsl:if test="$hasChildren">can-expand</xsl:if>
+        <xsl:if test="$hasChildren and not($depth &gt; 4)"> collapsed</xsl:if>
+      </xsl:attribute>
       <td class="expand-button">
         <xsl:if test="$hasChildren">
           <span class="icon" onclick="toggle('#{generate-id()}')" />
@@ -466,11 +466,9 @@
       <xsl:call-template name="CPUData" />
     </tr>
 
-    <xsl:if test="$depth > 2">
-      <xsl:for-each select="Methods">
-        <xsl:apply-templates />
-      </xsl:for-each>
-    </xsl:if>
+    <xsl:for-each select="Methods">
+      <xsl:apply-templates />
+    </xsl:for-each>
   </xsl:template>
 
 

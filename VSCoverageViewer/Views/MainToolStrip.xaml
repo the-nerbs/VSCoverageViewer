@@ -5,34 +5,58 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" mc:Ignorable="d"
              xmlns:local="clr-namespace:VSCoverageViewer"
              d:DesignWidth="650" d:DesignHeight="28">
+  <UserControl.Resources>
+    <Style x:Key="separatorStyle" TargetType="Separator">
+      <Setter Property="Margin" Value="3 0" />
+    </Style>
+
+    <Style x:Key="buttonStyle" TargetType="Button">
+      <Style.Triggers>
+        <Trigger Property="IsEnabled" Value="False">
+          <Setter Property="Opacity" Value="0.5" />
+        </Trigger>
+      </Style.Triggers>
+    </Style>
+  </UserControl.Resources>
+  
   <ToolBarTray>
     <ToolBar Height="28">
-      <ToolBar.Resources>
-        <Style TargetType="Separator">
-          <Setter Property="Margin" Value="6 0" />
-        </Style>
-      </ToolBar.Resources>
+      <Button Style="{StaticResource buttonStyle}"
+              Command="{Binding OpenCmd}"
+              ToolTip="Open">
 
-      <Button Command="{Binding OpenCmd}" ToolTip="Open">
-        <Image Source="{StaticResource {x:Static local:AppResourceKeys.OpenFileImg}}"
+        <Border BorderThickness="1">
+          <Image Source="{StaticResource {x:Static local:AppResourceKeys.OpenFileImg}}"
                Stretch="Uniform"/>
+        </Border>
+
       </Button>
 
-      <Button Command="{Binding SaveCmd}" ToolTip="Save">
-        <Image Source="{StaticResource {x:Static local:AppResourceKeys.SaveFileImg}}"
-               Stretch="Uniform"/>
+      <Button Style="{StaticResource buttonStyle}"
+              Command="{Binding SaveCmd}"
+              ToolTip="Save">
+
+        <Border BorderThickness="1">
+          <Image Source="{StaticResource {x:Static local:AppResourceKeys.SaveFileImg}}"
+                 Stretch="Uniform" />
+        </Border>
+
       </Button>
 
-      <Button Command="{Binding ExportCmd}" ToolTip="Export Summary">
-        <Image Source="{StaticResource {x:Static local:AppResourceKeys.ExportSummaryImg}}"
-               Stretch="Uniform"/>
+      <Button Style="{StaticResource buttonStyle}"
+              Command="{Binding ExportCmd}"
+              ToolTip="Export Summary">
+
+        <Border BorderThickness="1">
+          <Image Source="{StaticResource {x:Static local:AppResourceKeys.ExportSummaryImg}}"
+                 Stretch="Uniform"/>
+        </Border>
+
       </Button>
 
-      <Separator />
+      <Separator Style="{StaticResource separatorStyle}" />
 
-      <Button Margin="3 0"
-              HorizontalAlignment="Center"
-              VerticalAlignment="Center"
+      <Button Style="{StaticResource buttonStyle}"
               Command="{Binding ShowFilterDesignCmd}">
         <Border BorderThickness="1">
           <Image Source="{StaticResource FilterImg}"
@@ -54,6 +78,7 @@
                 SelectedValue="{Binding ColumnVisibilityPreset}" />
 
       <Button Margin="3 0"
+              Style="{StaticResource buttonStyle}"
               Command="{Binding ShowColumnPropertiesCmd}">
         <!-- Border is so the image isn't stretched. -->
         <Border BorderThickness="1">

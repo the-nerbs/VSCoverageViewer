@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Cache;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -21,6 +23,10 @@ namespace VSCoverageViewer
     /// </summary>
     internal class CoverageWriter
     {
+        private const string JQueryFileName = "jquery-3.1.1.slim.min.js";
+        private const string JQueryCDNLocation = @"https://code.jquery.com/" + JQueryFileName;
+
+
         private readonly XmlDocument _schemaDoc;
 
 
@@ -85,16 +91,18 @@ namespace VSCoverageViewer
             }
         }
 
+
         /// <summary>
         /// Writes a coverage summary in HTML format.
         /// </summary>
         /// <param name="models">The models to include in the coverage file.</param>
-        /// <param name="name">The project name to put in the coverage report.</param>
-        /// <param name="path">The path to write to.</param>
-        public void WriteHtmlSummary(IEnumerable<CoverageNodeModel> models, string name, string path)
+        /// <param name="configuration">The report configuration,</param>
+        public void WriteHtmlReport(IEnumerable<CoverageNodeModel> models, ReportConfigurationModel configuration)
         {
+            Contract.RequiresNotNull(configuration, nameof(configuration));
+
             CoverageDSPriv merged = ConcatenateFiles(models.Select(CreateSerializable));
-            var exportModel = new CoverageExport(name, merged);
+            var exportModel = new CoverageExport(configuration.ProjectName, merged);
 
             var ser = new XmlSerializer(typeof(CoverageExport));
 
@@ -104,23 +112,57 @@ namespace VSCoverageViewer
                 ser.Serialize(tempFile, exportModel);
             }
 
+
             var transform = new XslCompiledTransform();
             using (var xslReader = XmlReader.Create(new StringReader(Resources.HTMLTransform)))
             {
                 transform.Load(xslReader);
             }
 
+
             var args = new XsltArgumentList();
             args.AddParam("genDate", "", DateTime.Now.ToString("dd MMM yyyy HH:mm:ss"));
             args.AddParam("totalLines", "", exportModel.LinesCovered + exportModel.LinesPartiallyCovered + exportModel.LinesNotCovered);
             args.AddParam("totalBlocks", "", exportModel.BlocksCovered + exportModel.BlocksNotCovered);
 
-            using (var outputFile = new FileStream(path, FileMode.Create, FileAccess.Write))
+            args.AddParam("depth", "", (int)configuration.DefaultExpansion);
+
+            switch (configuration.ReportFormat)
+            {
+                case ExportFormat.HtmlSingleFile:
+                    args.AddParam("jQuerySource", "", JQueryCDNLocation);
+                    break;
+
+                case ExportFormat.HtmlMultiFile:
+                    {
+                        // Note (Windows-specific):
+                        // when a web page ("Page.html") is accompanied by a folder named like "Page_files", 
+                        // windows will try to keep the folder with the html page.
+                        string filesDirName = Path.GetFileNameWithoutExtension(configuration.DestinationPath) + "_files";
+                        string filesDirPath = Path.Combine(Path.GetDirectoryName(configuration.DestinationPath), filesDirName);
+
+                        Directory.CreateDirectory(filesDirPath);
+
+                        string jqueryPath = Path.Combine(filesDirName, JQueryFileName);
+                        args.AddParam("jQuerySource", "", jqueryPath);
+
+                        using (var webClient = new WebClient())
+                        {
+                            webClient.CachePolicy = new RequestCachePolicy(RequestCacheLevel.CacheIfAvailable);
+                            webClient.DownloadFile(JQueryCDNLocation, jqueryPath);
+                        }
+                    }
+                    break;
+
+                default:
+                    throw Utility.UnreachableCode("Unexpected export type.");
+            }
+
+            using (var outputFile = new FileStream(configuration.DestinationPath, FileMode.Create, FileAccess.Write))
             {
                 transform.Transform(tempFilePath, args, outputFile);
             }
         }
-
 
         private static CoverageDSPriv ConcatenateFiles(IEnumerable<CoverageDSPriv> files)
         {
