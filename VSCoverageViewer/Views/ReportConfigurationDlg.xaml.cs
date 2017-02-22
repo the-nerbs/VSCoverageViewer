@@ -67,23 +67,7 @@ namespace VSCoverageViewer.Views
             // probably doesn't matter, but unsubscribe just to be safe.
             SourceInitialized -= HandleSourceInitialized;
 
-            var hwndSource = PresentationSource.FromVisual(this) as HwndSource;
-            if (hwndSource != null)
-            {
-                // remove the title bar icon.
-                const int GWL_STYLE = -16;
-                const uint WS_SYSMENU = 0x80000;
-
-                IntPtr hwnd = hwndSource.Handle;
-                uint styleFlags = NativeMethods.GetWindowLong(hwnd, GWL_STYLE);
-
-                styleFlags &= ~WS_SYSMENU;
-
-                if (NativeMethods.SetWindowLong(hwnd, GWL_STYLE, styleFlags) == 0)
-                {
-                    throw new Win32Exception(Marshal.GetLastWin32Error());
-                }
-            }
+            NativeMethods.ClearWindowStyles(this, WindowStyles.SysMenu);
         }
 
         /// <summary>
@@ -95,16 +79,6 @@ namespace VSCoverageViewer.Views
         {
             DialogResult = true;
             Close();
-        }
-
-
-        private static class NativeMethods
-        {
-            [DllImport("user32.dll")]
-            public static extern uint GetWindowLong(IntPtr hWnd, int nIndex);
-
-            [DllImport("user32.dll", SetLastError = true)]
-            public static extern int SetWindowLong(IntPtr hWnd, int nIndex, uint dwNewLong);
         }
     }
 }

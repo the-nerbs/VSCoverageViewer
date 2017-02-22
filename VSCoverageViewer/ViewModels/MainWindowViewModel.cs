@@ -177,6 +177,8 @@ namespace VSCoverageViewer.ViewModels
             ReportCmd = new RelayCommand(CreateCoverageReport, HaveRows);
             ExitCmd = new RelayCommand(Exit);
 
+            ShowColumnPropertiesCmd = new RelayCommand(ShowColumnPropertiesDialog);
+
             ExpandTreeCmd = new RelayCommand(ExpandSelectedTree, HaveSelectedNode);
             CollapseTreeCmd = new RelayCommand(CollapseSelectedTree, HaveSelectedNode);
             ExpandAllCmd = new RelayCommand(ExpandAll, HaveRows);
@@ -185,6 +187,7 @@ namespace VSCoverageViewer.ViewModels
             RemoveNodeCmd = new RelayCommand(RemoveSelectedNode, HaveSelectedNode);
 
             ReadMetadataCmd = new RelayCommand(ReadMetadata, CanReadMetadata);
+
 
             CoverageRows.CollectionChanged += CoverageRowsCollectionChanged;
         }
@@ -349,8 +352,22 @@ namespace VSCoverageViewer.ViewModels
         /// </summary>
         public void ShowColumnPropertiesDialog()
         {
-            // TODO: column visibility.
-            throw new NotImplementedException();
+            var dlg = new ColumnPropertiesDlg();
+            dlg.Owner = Owner;
+
+            dlg.ViewModel.SetVisibleColumns(_columnVisibility);
+
+            // note: nullable bools...
+            if (dlg.ShowDialog() == true)
+            {
+                var newSettings = dlg.ViewModel.GetVisibleColumns();
+
+                SetVisibleColumns(
+                    newSettings
+                        .Where(kvp => kvp.Value)
+                        .Select(kvp => kvp.Key)
+                );
+            }
         }
 
         /// <summary>

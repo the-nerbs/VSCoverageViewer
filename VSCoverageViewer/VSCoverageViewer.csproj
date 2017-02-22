@@ -136,16 +136,22 @@
     <Compile Include="Serialization\ModuleCoverageInfo.cs" />
     <Compile Include="Serialization\NamespaceCoverageInfo.cs" />
     <Compile Include="Serialization\SourceFileInfo.cs" />
+    <Compile Include="SortedObservableCollection.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="ViewModelCollection.cs" />
+    <Compile Include="ViewModels\ColumnPropertiesViewModel.cs" />
     <Compile Include="ViewModels\CoverageNodeViewModel.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\ReportConfigurationViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="Views\ColumnPropertiesDlg.xaml.cs">
+      <DependentUpon>ColumnPropertiesDlg.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ColumnType.cs" />
     <Compile Include="Views\CoverageGrid.xaml.cs">
       <DependentUpon>CoverageGrid.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\NativeMethods.cs" />
     <Compile Include="Views\ReportConfigurationDlg.xaml.cs">
       <DependentUpon>ReportConfigurationDlg.xaml</DependentUpon>
     </Compile>
@@ -169,6 +175,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\ColumnPropertiesDlg.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\CoverageGrid.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
