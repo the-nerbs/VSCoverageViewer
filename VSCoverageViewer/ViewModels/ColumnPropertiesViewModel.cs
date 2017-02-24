@@ -201,7 +201,7 @@ namespace VSCoverageViewer.ViewModels
             for (int i = 0; i < SelectedVisibleColumns.Count; i++)
             {
                 int origIdx = VisibleColumns.IndexOf(SelectedVisibleColumns[i]);
-                SwapColumns(VisibleColumns, origIdx, origIdx - 1);
+                VisibleColumns.Move(origIdx, origIdx - 1);
             }
         }
 
@@ -217,22 +217,8 @@ namespace VSCoverageViewer.ViewModels
             for (int i = SelectedVisibleColumns.Count - 1; i >= 0; i--)
             {
                 int origIdx = VisibleColumns.IndexOf(SelectedVisibleColumns[i]);
-                SwapColumns(VisibleColumns, origIdx, origIdx + 1);
+                VisibleColumns.Move(origIdx, origIdx + 1);
             }
-        }
-
-
-        /// <summary>
-        /// Swaps the elements at two indexes of a list.
-        /// </summary>
-        /// <param name="collection">The list to modify.</param>
-        /// <param name="x">The index of the one element.</param>
-        /// <param name="y">The index of the other element.</param>
-        private static void SwapColumns(IList<Column> collection, int x, int y)
-        {
-            var orig = collection[x];
-            collection[x] = collection[y];
-            collection[y] = orig;
         }
     }
 }
